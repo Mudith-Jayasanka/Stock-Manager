@@ -1,0 +1,27 @@
+@startuml
+title Label Generation Flow (With Variables)
+
+actor User
+participant "UI: Dashboard" as Dashboard
+participant "API / Generator" as Generator
+participant "Database" as DB
+
+User -> Dashboard: Select Saved Label Template
+Dashboard -> DB: Fetch Template Details & Variables
+DB --> Dashboard: Template (with Text, Barcode, QR Variables)
+
+Dashboard -> User: Prompt for Variable Inputs
+User -> Dashboard: Enter Text Values for Variables
+
+User -> Dashboard: Click "Generate Label"
+Dashboard -> Generator: Send Template + Variable Values
+
+== Generation Process ==
+Generator -> Generator: Inject Values into Text Variables
+Generator -> Generator: Convert Text to Barcode Image (Validate Constraints)
+Generator -> Generator: Convert Text to QR Code Image
+Generator -> Generator: Composite Elements onto Label Canvas
+
+Generator --> Dashboard: Return Final Label Image
+Dashboard -> User: Display / Download Label Image
+@enduml

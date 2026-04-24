@@ -1,0 +1,50 @@
+@startuml
+title Label Editor - High Level Interaction Flow
+
+actor User
+
+participant "UI: Dashboard" as Dashboard
+participant "UI: Label Editor" as Editor
+participant "Canvas Workspace" as Canvas
+participant "Sidebar Layer Manager" as Sidebar
+
+User -> Dashboard: Select "Create New Label"
+Dashboard -> Editor: Open Editor View
+Editor -> User: Prompt for Dimensions (Width & Height)
+User -> Editor: Enter Dimensions & Confirm
+Editor -> Canvas: Initialize Label Canvas
+Editor -> Sidebar: Initialize Empty Element List
+
+== Adding Elements ==
+User -> Editor: Click Add Text, Add Image, or Add Variable (Text/Barcode/QR)
+Editor -> Canvas: Render New Element on Canvas
+Editor -> Sidebar: Append New Element to Layer List
+
+== Interacting with Canvas Elements ==
+User -> Canvas: Click Element (Text/Image)
+Canvas -> Canvas: Mark Element as Selected
+User -> Canvas: Click and Drag Element
+Canvas -> Canvas: Update Element X/Y Coordinates
+
+User -> Canvas: Resize Image Element
+Canvas -> Canvas: Update Image Dimensions
+
+User -> Editor: Modify Text Styles (Font, Size, Bold)
+Editor -> Canvas: Update Text Element Rendering
+
+== Managing Layers via Sidebar ==
+User -> Sidebar: Drag & Drop Element to New Position in List
+Sidebar -> Editor: Trigger Layer Order Update
+Editor -> Canvas: Re-render Elements based on New Z-Index Order
+
+== Saving and Loading ==
+User -> Editor: Click "Save Label"
+Editor -> Dashboard: Serialize Label Data (Dimensions, Elements, Layers)
+Dashboard -> Dashboard: Store Data (Database/Local Storage)
+
+User -> Dashboard: Select "Load Label"
+Dashboard -> Editor: Open Editor with Saved Data
+Editor -> Canvas: Restore Canvas & Render Elements
+Editor -> Sidebar: Restore Element List
+
+@enduml
