@@ -1,0 +1,35 @@
+@startuml
+title Master Data Management Flow
+
+actor User
+participant "UI: Master Data Tab" as UI
+participant "API / Backend" as API
+participant "Database" as DB
+
+== Adding New Config ==
+User -> UI: Select Category (e.g., Fragrances)
+User -> UI: Enter New Type Text & Click Add
+UI -> API: Submit New Type
+API -> DB: Insert Record into Master Data Table
+DB --> API: Success
+API --> UI: Update UI List
+
+== Archiving / Deleting Config (Soft Delete) ==
+User -> UI: Click "Delete" on an item
+UI -> API: Request Deletion (Item ID)
+
+API -> DB: Check for Foreign Key references in Products Table
+DB --> API: Return Usage Count
+
+alt Item is In Use (Usage Count > 0)
+    API -> DB: Soft Delete: Set isActive = false
+    DB --> API: Success
+    API --> UI: Item Archived (Hidden from new dropdowns)
+    UI --> User: Show "Item Archived" Notification
+else Item is NOT In Use (Usage Count == 0)
+    API -> DB: Hard Delete Record from Master Data Table
+    DB --> API: Success
+    API --> UI: Item Removed Successfully
+    UI --> User: Update UI List
+end
+@enduml

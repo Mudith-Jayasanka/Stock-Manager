@@ -1,0 +1,40 @@
+@startuml
+title Product Creation Flow (Scented Candles)
+
+actor User
+participant "UI: Products Tab" as Products
+participant "UI: Product Creator" as Creator
+participant "API: Master Data" as API
+participant "Database" as DB
+
+User -> Products: Click "Create Product"
+Products -> Creator: Open Product Creation Page
+Creator -> API: Fetch Master Data (Fragrances, Containers)
+API -> DB: Query Configurations
+DB --> API: Return Configured Data
+API --> Creator: Populate Dropdown Options
+
+User -> Creator: Enter Basic Info (Name, Price, Cost, Weight)
+User -> Creator: Select Container Type (from Master Data)
+
+== Adding Fragrance Composition ==
+User -> Creator: Select Fragrance (from Master Data)
+Creator -> Creator: Add to Composition List
+User -> Creator: Set Percentage for Fragrance
+User -> Creator: (Repeat for additional fragrances)
+
+== Validation & Saving ==
+User -> Creator: Click "Save Product"
+Creator -> Creator: Validate: Do all fragrance percentages sum to 100%?
+
+alt Validation Failed
+    Creator --> User: Show Error "Fragrance percentages must add up to 100%"
+else Validation Passed
+    Creator -> API: Submit New Product Data
+    API -> DB: Insert Product Record
+    DB --> API: Success
+    API --> Creator: Success Notification
+    Creator --> Products: Redirect to Products List
+end
+
+@enduml
