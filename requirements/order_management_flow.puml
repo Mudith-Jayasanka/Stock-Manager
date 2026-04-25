@@ -1,0 +1,59 @@
+@startuml
+title Order Management & Status Flow
+
+actor User
+participant "UI: Orders Tab" as UI
+participant "UI: Create Order" as Creator
+participant "API / Backend" as API
+participant "Database" as DB
+
+== Creating an Order (With Customer Logic) ==
+User -> UI: Click "Create Order"
+UI -> Creator: Open Order Creation Page
+
+== Customer Lookup ==
+User -> Creator: Type in Omni-Search (Name/Phone/Email/Address)
+Creator -> API: Search Customers
+API -> DB: Query Customer Table
+DB --> API: Return Matches
+API --> Creator: Display Results Dropdown
+User -> Creator: Select Existing Customer (Auto-fills form) OR Enter New Details
+
+== Order Submission ==
+User -> Creator: Select Product(s) & Set Quantities
+User -> Creator: Click "Submit Order"
+
+Creator -> API: Post Order & Customer Data
+API -> API: Sanitize Phone Number
+API -> DB: Check if Phone Number exists
+
+alt New Customer (Phone Number not found)
+    API -> DB: Create New Customer Record
+    DB --> API: Return New Customer ID
+else Existing Customer
+    API -> DB: Update Existing Customer Details (if changed)
+    DB --> API: Return Existing Customer ID
+end
+
+API -> DB: Save Order Items tied to Customer ID (Status: Pending)
+DB --> API: Return Success (Order ID)
+API --> Creator: Order Created Notification
+Creator --> UI: Redirect back to Orders List
+
+== Managing Orders & Statuses ==
+User -> UI: View Orders List
+UI -> API: Fetch Orders Data
+API -> DB: Query Orders
+DB --> API: Return Orders
+API --> UI: Render Orders (Preview Info & Current Status)
+
+User -> UI: Filter List by Status (e.g., "Pending")
+UI -> UI: Display matching orders
+
+User -> UI: Select Order & Change Status (e.g., Pending -> Making)
+UI -> API: Update Order Status Request (OrderID, NewStatus)
+API -> DB: Update Status Column in Database
+DB --> API: Success
+API --> UI: Update Status Badge on UI
+
+@enduml
