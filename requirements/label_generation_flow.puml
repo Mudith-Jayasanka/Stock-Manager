@@ -2,26 +2,26 @@
 title Label Generation Flow (With Variables)
 
 actor User
-participant "UI: Dashboard" as Dashboard
-participant "API / Generator" as Generator
-participant "Database" as DB
+participant "Angular UI" as UI
+participant "Angular Print Service" as Generator
+participant "Backend API" as API
 
-User -> Dashboard: Select Saved Label Template
-Dashboard -> DB: Fetch Template Details & Variables
-DB --> Dashboard: Template (with Text, Barcode, QR Variables)
+User -> UI: Select Saved Label Template
+UI -> API: Fetch Template Details & Variables
+API --> UI: Template (with Text, Barcode, QR Variables)
 
-Dashboard -> User: Prompt for Variable Inputs
-User -> Dashboard: Enter Text Values for Variables
+UI -> User: Prompt for Variable Inputs
+User -> UI: Enter Text Values for Variables
 
-User -> Dashboard: Click "Generate Label"
-Dashboard -> Generator: Send Template + Variable Values
+User -> UI: Click "Generate Label"
+UI -> Generator: Pass Template + Variable Values
 
-== Generation Process ==
+== Client-Side Generation Process ==
 Generator -> Generator: Inject Values into Text Variables
-Generator -> Generator: Convert Text to Barcode Image (Validate Constraints)
-Generator -> Generator: Convert Text to QR Code Image
-Generator -> Generator: Composite Elements onto Label Canvas
+Generator -> Generator: Convert Text to Barcode Image (Client-side Library)
+Generator -> Generator: Convert Text to QR Code Image (Client-side Library)
+Generator -> Generator: Composite Elements onto HTML5 Canvas
 
-Generator --> Dashboard: Return Final Label Image
-Dashboard -> User: Display / Download Label Image
+Generator --> UI: Return Final Label Image / Print Document
+UI -> User: Trigger Browser Print Dialog / Download
 @enduml

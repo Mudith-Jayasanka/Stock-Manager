@@ -61,14 +61,13 @@ User -> UI: View Order Details
 UI -> UI: Display List of Label Templates
 User -> UI: Click "Print" on a specific Template
 
-UI -> API: Request Label Generation (TemplateID, OrderID)
-API -> DB: Fetch Template & Global Data Mappings
-API -> DB: Fetch Order & Product Data
-API -> API: Inject Data into Template Variables
-API -> API: Render Final Label PDF
+UI -> API: Fetch Template & Global Data Mappings
+API --> UI: Return Template Details
+UI -> API: Fetch Order & Product Data
+API --> UI: Return Data
+UI -> UI: (Angular Service) Inject Data into Template Variables
+UI -> UI: (Angular Service) Render Final Label to Print Window
 
-API --> UI: Return Print-Ready Document
-UI -> UI: Open Document in hidden frame
 UI -> User: Trigger Browser Print (window.print())
 
 == Batch Printing (From Dashboard) ==
@@ -77,14 +76,13 @@ User -> UI: Check "Select All" (Selects multiple orders)
 UI -> UI: Unlock/Enable Dashboard Print Buttons
 User -> UI: Click "Print" on a specific Template
 
-UI -> API: Request Batch Generation (TemplateID, [Array of OrderIDs])
-API -> DB: Fetch Template & Global Data Mappings
-API -> DB: Fetch Data for ALL selected Orders
-API -> API: Loop & Inject Data for each Order/Product
-API -> API: Render Multi-Page Label PDF
+UI -> API: Fetch Template & Global Data Mappings
+API --> UI: Return Template Details
+UI -> API: Fetch Data for ALL selected Orders
+API --> UI: Return Array of Orders
+UI -> UI: (Angular Service) Loop & Inject Data for each Order/Product
+UI -> UI: (Angular Service) Render Multi-Page/Continuous Label Layout
 
-API --> UI: Return Batch Print-Ready Document
-UI -> UI: Open Document in hidden frame
 UI -> User: Trigger Browser Print (window.print())
 
 @enduml
