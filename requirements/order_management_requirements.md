@@ -8,6 +8,7 @@ The main view for managing all customer orders.
 - **List View:** Displays all created orders with a quick preview of key details (e.g., Order ID, Customer Name, Total Price, Date Created, Current Status).
 - **Filtering & Sorting:** Users can easily filter the list of orders by their current **Status**.
 - **Quick Status Update:** Users can change the status of an order directly from the list view (e.g., via a dropdown) without having to click into the full order details.
+- **Bulk Selection:** Users can select multiple orders simultaneously using checkboxes. A "Select All" feature allows users to quickly grab all orders currently visible under an active filter (e.g., selecting all "Packaging" orders).
 - **Actions:** A "Create Order" button is prominently available to initiate a new manual order.
 
 ## 2. Order Creation Page
@@ -38,3 +39,19 @@ Orders progress through a specific lifecycle. The statuses have been optimized f
 4. **Dispatched / Shipped:** The packaged order has been handed over to the delivery courier.
 5. **Delivered:** The order has successfully reached the customer.
 6. **Cancelled:** The order was cancelled (this can be triggered at any stage prior to delivery).
+
+## 4. Order Printing & Label Generation
+Users can print labels directly from inside a specific order, or in bulk from the main Orders Dashboard.
+
+### Individual Printing (Inside Order View)
+- A section within the Order details displays a list of all available label templates.
+- Clicking the "Print" button next to a template triggers the label generation flow for that specific order.
+
+### Batch Printing (From Orders Dashboard)
+- A "Label Printing" panel is permanently visible on the main Orders Dashboard, listing all available templates.
+- **Lock State:** The "Print" buttons on these templates remain disabled/locked until the user selects at least one order from the list.
+- **Batch Generation:** When multiple orders are selected, clicking "Print" sends the array of selected orders to the generator. The system generates a continuous, multi-page document containing the requested labels for *all* selected orders at once.
+
+### Core Printing Mechanics
+- **Data Injection:** The system automatically injects Order and Product data into the template's globally mapped variables.
+- **Browser Integration:** To ensure reliability across all browsers, the system generates a high-resolution, print-ready document (e.g., PDF) in the background and automatically invokes the browser's native print dialog (`window.print()`), allowing the user to select their physical label printer.

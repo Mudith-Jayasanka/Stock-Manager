@@ -37,6 +37,10 @@ The core feature of the application is the ability to design and create custom l
 - **Saving:** Users can save their current label design. This will save the label's dimensions, along with all the elements (text, images, variables) and their associated properties (position, size, styling, layer order).
 - **Loading:** Users can load previously saved label designs to continue editing them. Loading a label restores the canvas dimensions, elements, and layer orders exactly as they were saved.
 
-### 6. Label Generation (Dynamic Output)
-- **Generation Flow:** In a separate workflow, users can select a saved label template and pass in specific text values for the variable elements defined in that template.
-- **Image Generation:** The system populates the placeholders with the actual content (text, rendered barcode, rendered QR code) and outputs a final, unique label image.
+### 6. Data Mapping (Global Configuration)
+- **Mapping Variables:** When saving a label template, users can map the template's variable elements to specific system data fields (e.g., mapping "Var1" to `Order.Customer.FullName`, or "Var2" to `Product.Price`).
+- **Global Persistence:** This mapping is saved globally at the template level. Once a template's variables are mapped, they will automatically pull the correct data anytime this template is used for printing, ensuring consistency across all orders.
+
+### 7. Label Generation (Dynamic Output)
+- **Generation Flow:** The system takes a saved label template and injects live data (from Orders or Products) into the mapped variable elements.
+- **Image Generation:** The system populates the placeholders with the actual content (text, rendered barcode, rendered QR code) and outputs a final, unique label image (or PDF) ready for printing.

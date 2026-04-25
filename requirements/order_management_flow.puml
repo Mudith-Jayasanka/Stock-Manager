@@ -56,4 +56,35 @@ API -> DB: Update Status Column in Database
 DB --> API: Success
 API --> UI: Update Status Badge on UI
 
+== Printing Labels (Single Order) ==
+User -> UI: View Order Details
+UI -> UI: Display List of Label Templates
+User -> UI: Click "Print" on a specific Template
+
+UI -> API: Request Label Generation (TemplateID, OrderID)
+API -> DB: Fetch Template & Global Data Mappings
+API -> DB: Fetch Order & Product Data
+API -> API: Inject Data into Template Variables
+API -> API: Render Final Label PDF
+
+API --> UI: Return Print-Ready Document
+UI -> UI: Open Document in hidden frame
+UI -> User: Trigger Browser Print (window.print())
+
+== Batch Printing (From Dashboard) ==
+User -> UI: Filter Orders (e.g., Status = Packaging)
+User -> UI: Check "Select All" (Selects multiple orders)
+UI -> UI: Unlock/Enable Dashboard Print Buttons
+User -> UI: Click "Print" on a specific Template
+
+UI -> API: Request Batch Generation (TemplateID, [Array of OrderIDs])
+API -> DB: Fetch Template & Global Data Mappings
+API -> DB: Fetch Data for ALL selected Orders
+API -> API: Loop & Inject Data for each Order/Product
+API -> API: Render Multi-Page Label PDF
+
+API --> UI: Return Batch Print-Ready Document
+UI -> UI: Open Document in hidden frame
+UI -> User: Trigger Browser Print (window.print())
+
 @enduml
