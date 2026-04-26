@@ -95,7 +95,13 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   gap: 12px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
+
 
 .item-info {
   display: flex; flex-direction: column; gap: 4px; flex: 1;
@@ -105,6 +111,10 @@
 
 .item-controls {
   display: flex; align-items: center; gap: 16px;
+
+  @media (max-width: 480px) {
+    gap: 10px;
+  }
 }
 
 .qty-control {
@@ -175,4 +185,10 @@
   justify-content: flex-end;
   gap: 12px;
   padding-top: 8px;
+
+  @media (max-width: 480px) {
+    flex-direction: column-reverse;
+    .btn { justify-content: center; }
+  }
 }
+

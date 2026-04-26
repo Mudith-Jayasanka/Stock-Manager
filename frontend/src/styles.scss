@@ -251,3 +251,58 @@ input[type="checkbox"] {
 // ─── Material Overrides ──────────────────────────────────────────────────────
 .mat-mdc-select-panel { background: var(--bg-card) !important; }
 .mat-mdc-option { color: var(--text-primary) !important; }
+
+// ─── Mobile Responsive ───────────────────────────────────────────────────────
+@media (max-width: 768px) {
+
+  // Layout: hide sidebar, show bottom nav bar (defined in app.ts)
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .page-content {
+    padding: 16px;
+    // Leave space for the fixed bottom nav bar
+    padding-bottom: calc(64px + 16px);
+  }
+
+  // Page header stacks vertically on mobile
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .btn { align-self: flex-start; }
+  }
+
+  // Cards get tighter padding on mobile
+  .card { padding: 16px; }
+
+  // Tables: horizontal scroll wrapper — applied globally via parent card
+  .card .data-table,
+  .table-card .data-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+
+  // Ensure table itself doesn't shrink below its content
+  table.data-table {
+    min-width: 480px;
+  }
+
+  // Toast snaps to full-width bottom strip on mobile
+  .toast {
+    left: 12px;
+    right: 12px;
+    bottom: 72px; // above the bottom nav bar
+    text-align: center;
+  }
+
+  // Typography scale down slightly
+  h1 { font-size: 20px; }
+  h2 { font-size: 16px; }
+}
+

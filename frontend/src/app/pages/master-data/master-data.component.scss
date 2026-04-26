@@ -7,7 +7,13 @@
   border-radius: var(--radius);
   padding: 6px;
   width: fit-content;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    .tab { flex: 1; justify-content: center; }
+  }
 }
+
 
 .tab {
   display: flex;
