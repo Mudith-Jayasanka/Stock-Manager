@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { OrdersService } from '../../../services/orders.service';
 import { LabelTemplatesService } from '../../../services/label-templates.service';
+import { PrintService } from '../../../services/print.service';
 import { Order, LabelTemplate } from '../../../models';
 
 @Component({
@@ -21,7 +22,8 @@ export class OrderDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private ordersService: OrdersService,
-    private templatesService: LabelTemplatesService
+    private templatesService: LabelTemplatesService,
+    private printService: PrintService
   ) {}
 
   ngOnInit() {
@@ -62,7 +64,6 @@ export class OrderDetailComponent implements OnInit {
     const template = this.templates.find(t => t.id === templateId);
     if (!template || !this.order) return;
     
-    // Print service will be implemented in Phase 5
-    alert(`[Print Single] Template: "${template.name}" for Order ${this.order.id}\n\n(Print engine coming in Phase 5)`);
+    this.printService.printLabels([this.order], template);
   }
 }

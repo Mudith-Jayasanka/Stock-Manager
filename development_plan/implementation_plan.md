@@ -34,10 +34,10 @@
 - Build the Sidebar Layer Manager (reordering z-index).
 - Implement saving/loading templates from the database.
 
-## 6. Phase 5: Mapping & Client-Side Printing
-- Build the UI to globally map template variables to specific system fields (e.g., `Product.Name`, `Order.ID`).
-- Implement the Angular Print Service:
-  - Fetch template and mappings.
+## ✅ 6. Phase 5: Mapping & Client-Side Printing
+- Map global system variables (Order/Product attributes) to the canvas templates.
+- Implement the client-side printing logic (mapping variables to objects, rendering canvas, converting to PDF/Image, triggering print).
+- Expose single print in Order Details and Batch Printing in the Orders Dashboard.
   - Fetch selected Order(s) data.
   - Dynamically inject data into the canvas elements.
   - Generate the final multi-page print view and trigger `window.print()`.

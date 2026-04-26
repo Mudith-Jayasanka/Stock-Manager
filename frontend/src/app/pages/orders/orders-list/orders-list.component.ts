@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OrdersService } from '../../../services/orders.service';
 import { LabelTemplatesService } from '../../../services/label-templates.service';
+import { PrintService } from '../../../services/print.service';
 import { Order, OrderStatus, LabelTemplate } from '../../../models';
 
 @Component({
@@ -32,7 +33,8 @@ export class OrdersListComponent implements OnInit {
 
   constructor(
     private ordersService: OrdersService,
-    private templatesService: LabelTemplatesService
+    private templatesService: LabelTemplatesService,
+    private printService: PrintService
   ) {}
 
   ngOnInit() {
@@ -78,8 +80,7 @@ export class OrdersListComponent implements OnInit {
     const template = this.templates.find(t => t.id === templateId);
     if (!template) return;
     const selectedOrders = this.orders.filter(o => this.selectedOrderIds.has(o.id));
-    // Print service will be implemented in Phase 5
-    alert(`[Print] Template: "${template.name}" for ${selectedOrders.length} order(s)\n\n(Print engine coming in Phase 5)`);
+    this.printService.printLabels(selectedOrders, template);
   }
 
   getStatusClass(status: string): string { return status; }
