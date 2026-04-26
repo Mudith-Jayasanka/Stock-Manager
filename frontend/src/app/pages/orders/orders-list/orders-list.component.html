@@ -1,0 +1,118 @@
+<div class="page-header">
+  <div class="page-title">
+    <h1>Orders</h1>
+    <p>Manage and track all customer orders</p>
+  </div>
+  <a routerLink="/orders/create" class="btn btn-primary">
+    <span class="material-icons">add</span> Create Order
+  </a>
+</div>
+
+<div class="orders-layout">
+
+  <!-- ─── Orders Panel ─────────────────────────────────────────────── -->
+  <div class="orders-panel">
+
+    <!-- Toolbar -->
+    <div class="toolbar card">
+      <div class="toolbar-left">
+        <label class="select-all">
+          <input type="checkbox" [checked]="allSelected" (change)="selectAll()" [indeterminate]="selectedCount > 0 && !allSelected">
+          Select All
+        </label>
+        <span *ngIf="selectedCount > 0" class="selection-badge">{{ selectedCount }} selected</span>
+      </div>
+      <div class="toolbar-right">
+        <select [(ngModel)]="selectedStatus" (change)="onStatusFilterChange()" class="status-filter">
+          <option *ngFor="let s of statuses" [value]="s.value">{{ s.label }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card table-card" style="padding: 0;">
+      <div *ngIf="loading" class="empty-state">
+        <span class="material-icons">hourglass_empty</span>
+        <p>Loading orders…</p>
+      </div>
+
+      <div *ngIf="!loading && orders.length === 0" class="empty-state">
+        <span class="material-icons">receipt_long</span>
+        <p>No orders found</p>
+      </div>
+
+      <table *ngIf="!loading && orders.length > 0" class="data-table">
+        <thead>
+          <tr>
+            <th style="width:40px"></th>
+            <th>Order</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th style="width:40px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orders" [class.selected]="selectedOrderIds.has(order.id)">
+            <td>
+              <input type="checkbox" [checked]="selectedOrderIds.has(order.id)" (change)="toggleSelect(order.id)">
+            </td>
+            <td>
+              <a [routerLink]="['/orders', order.id]" class="order-id">{{ order.id }}</a>
+            </td>
+            <td>
+              <div class="customer-cell">
+                <span class="customer-name">{{ order.customer?.fullName }}</span>
+                <span class="customer-phone">{{ order.customer?.phone }}</span>
+              </div>
+            </td>
+            <td>{{ order.items.length }} item(s)</td>
+            <td>
+              <select class="inline-status-select" [ngClass]="getStatusClass(order.status)"
+                      [value]="order.status" (change)="updateStatus(order, $any($event.target).value)">
+                <option *ngFor="let s of statuses.slice(1)" [value]="s.value">{{ s.label }}</option>
+              </select>
+            </td>
+            <td>{{ order.createdAt | date:'MMM d, y' }}</td>
+            <td>
+              <a [routerLink]="['/orders', order.id]" class="btn btn-ghost" style="padding: 5px 8px;">
+                <span class="material-icons" style="font-size:16px">chevron_right</span>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── Print Panel ──────────────────────────────────────────────── -->
+  <div class="print-panel card">
+    <h3>
+      <span class="material-icons">print</span>
+      Batch Print Labels
+    </h3>
+    <p class="print-hint" *ngIf="selectedCount === 0">Select orders to unlock printing</p>
+    <p class="print-hint active" *ngIf="selectedCount > 0">{{ selectedCount }} order(s) selected</p>
+
+    <div class="template-list">
+      <div class="template-item" *ngFor="let tmpl of templates">
+        <div class="template-info">
+          <span class="material-icons">dashboard_customize</span>
+          <div>
+            <span class="tmpl-name">{{ tmpl.name }}</span>
+            <span class="tmpl-size">{{ tmpl.widthMm }} × {{ tmpl.heightMm }} mm</span>
+          </div>
+        </div>
+        <button class="btn btn-primary" [disabled]="selectedCount === 0" (click)="printTemplate(tmpl.id)">
+          <span class="material-icons">print</span>
+        </button>
+      </div>
+      <div *ngIf="templates.length === 0" class="empty-state" style="padding: 24px;">
+        <span class="material-icons">dashboard_customize</span>
+        <p>No templates yet</p>
+      </div>
+    </div>
+  </div>
+
+</div>

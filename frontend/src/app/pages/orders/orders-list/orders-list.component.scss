@@ -1,0 +1,129 @@
+.orders-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  align-items: start;
+}
+
+.orders-panel { display: flex; flex-direction: column; gap: 16px; }
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+
+  .toolbar-left { display: flex; align-items: center; gap: 16px; }
+
+  .select-all {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--text-secondary); cursor: pointer;
+  }
+
+  .selection-badge {
+    background: var(--accent-dim);
+    color: var(--accent-light);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+}
+
+.status-filter {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  &:focus { border-color: var(--accent); }
+}
+
+tr.selected td { background: rgba(124,106,247,0.06); }
+
+.order-id {
+  color: var(--accent-light);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 12px;
+  &:hover { text-decoration: underline; }
+}
+
+.customer-cell {
+  display: flex; flex-direction: column; gap: 2px;
+  .customer-name { font-weight: 500; }
+  .customer-phone { font-size: 11px; color: var(--text-muted); }
+}
+
+.inline-status-select {
+  border: none;
+  border-radius: 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
+  outline: none;
+  cursor: pointer;
+
+  &.pending    { background: rgba(245,166,35,0.15); color: #f5a623; }
+  &.making     { background: rgba(66,165,245,0.15); color: #42a5f5; }
+  &.packaging  { background: rgba(124,106,247,0.15); color: #9d8fff; }
+  &.dispatched { background: rgba(76,175,130,0.15); color: #4caf82; }
+  &.delivered  { background: rgba(76,175,130,0.25); color: #6fcfa0; }
+  &.cancelled  { background: rgba(240,83,101,0.15); color: #f05365; }
+
+  option { background: var(--bg-card); color: var(--text-primary); text-transform: none; }
+}
+
+// ── Print Panel ───────────────────────────────────────────────────────────────
+.print-panel {
+  position: sticky;
+  top: 0;
+
+  h3 {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px;
+    .material-icons { color: var(--accent); font-size: 18px; }
+  }
+
+  .print-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-secondary);
+
+    &.active {
+      background: var(--accent-dim);
+      color: var(--accent-light);
+    }
+  }
+}
+
+.template-list { display: flex; flex-direction: column; gap: 8px; }
+
+.template-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  gap: 8px;
+
+  .template-info {
+    display: flex; align-items: center; gap: 10px;
+    .material-icons { color: var(--text-muted); font-size: 18px; }
+  }
+
+  .tmpl-name { display: block; font-size: 13px; font-weight: 500; }
+  .tmpl-size { display: block; font-size: 11px; color: var(--text-muted); }
+}

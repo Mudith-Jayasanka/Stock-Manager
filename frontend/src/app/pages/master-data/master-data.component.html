@@ -1,0 +1,147 @@
+<div class="page-header">
+  <div class="page-title">
+    <h1>Master Data</h1>
+    <p>Configure lookup values used across the application</p>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab" [class.active]="activeTab === 'containers'" (click)="activeTab = 'containers'">
+    <span class="material-icons">inventory_2</span>
+    Container Types
+    <span class="tab-count">{{ containerTypes.length }}</span>
+  </button>
+  <button class="tab" [class.active]="activeTab === 'fragrances'" (click)="activeTab = 'fragrances'">
+    <span class="material-icons">local_florist</span>
+    Fragrances
+    <span class="tab-count">{{ fragrances.length }}</span>
+  </button>
+</div>
+
+<!-- ─── Container Types Tab ─────────────────────────────────────────────────── -->
+<div *ngIf="activeTab === 'containers'" class="tab-content">
+  <!-- Add form -->
+  <div class="card add-form">
+    <h3>Add Container Type</h3>
+    <div class="add-row">
+      <input
+        type="text"
+        [(ngModel)]="newContainerName"
+        placeholder="e.g. Glass Jar (12oz)"
+        (keyup.enter)="addContainerType()"
+      />
+      <button class="btn btn-primary" (click)="addContainerType()" [disabled]="!newContainerName.trim()">
+        <span class="material-icons">add</span> Add
+      </button>
+    </div>
+  </div>
+
+  <!-- List -->
+  <div class="card" style="padding: 0;">
+    <div *ngIf="containerTypes.length === 0" class="empty-state">
+      <span class="material-icons">inventory_2</span>
+      <p>No container types configured</p>
+    </div>
+    <table *ngIf="containerTypes.length > 0" class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Used In</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of containerTypes" [class.archived]="!item.isActive">
+          <td>
+            <div class="item-name">
+              <span class="material-icons item-icon">inventory_2</span>
+              {{ item.name }}
+            </div>
+          </td>
+          <td>
+            <span class="status-badge" [class.delivered]="item.isActive" [class.cancelled]="!item.isActive">
+              {{ item.isActive ? 'Active' : 'Archived' }}
+            </span>
+          </td>
+          <td>
+            <span class="usage-count" [class.in-use]="(item.usageCount ?? 0) > 0">
+              {{ item.usageCount ?? 0 }} product(s)
+            </span>
+          </td>
+          <td class="action-cell">
+            <button class="btn btn-danger" (click)="deleteContainerType(item.id)" [disabled]="!item.isActive" title="Delete or archive">
+              <span class="material-icons">{{ (item.usageCount ?? 0) > 0 ? 'archive' : 'delete' }}</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── Fragrances Tab ──────────────────────────────────────────────────────── -->
+<div *ngIf="activeTab === 'fragrances'" class="tab-content">
+  <!-- Add form -->
+  <div class="card add-form">
+    <h3>Add Fragrance</h3>
+    <div class="add-row">
+      <input
+        type="text"
+        [(ngModel)]="newFragranceName"
+        placeholder="e.g. Jasmine & Sandalwood"
+        (keyup.enter)="addFragrance()"
+      />
+      <button class="btn btn-primary" (click)="addFragrance()" [disabled]="!newFragranceName.trim()">
+        <span class="material-icons">add</span> Add
+      </button>
+    </div>
+  </div>
+
+  <!-- List -->
+  <div class="card" style="padding: 0;">
+    <div *ngIf="fragrances.length === 0" class="empty-state">
+      <span class="material-icons">local_florist</span>
+      <p>No fragrances configured</p>
+    </div>
+    <table *ngIf="fragrances.length > 0" class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Used In</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of fragrances" [class.archived]="!item.isActive">
+          <td>
+            <div class="item-name">
+              <span class="material-icons item-icon">local_florist</span>
+              {{ item.name }}
+            </div>
+          </td>
+          <td>
+            <span class="status-badge" [class.delivered]="item.isActive" [class.cancelled]="!item.isActive">
+              {{ item.isActive ? 'Active' : 'Archived' }}
+            </span>
+          </td>
+          <td>
+            <span class="usage-count" [class.in-use]="(item.usageCount ?? 0) > 0">
+              {{ item.usageCount ?? 0 }} product(s)
+            </span>
+          </td>
+          <td class="action-cell">
+            <button class="btn btn-danger" (click)="deleteFragrance(item.id)" [disabled]="!item.isActive" title="Delete or archive">
+              <span class="material-icons">{{ (item.usageCount ?? 0) > 0 ? 'archive' : 'delete' }}</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Toast -->
+<div *ngIf="toast" class="toast" [class]="'toast ' + toast.type">{{ toast.message }}</div>

@@ -1,0 +1,63 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.search-box, .sort-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  .material-icons { font-size: 16px; color: var(--text-muted); }
+  input, select {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    outline: none;
+    option { background: var(--bg-card); }
+  }
+}
+
+.search-box { flex: 1; min-width: 200px; }
+
+.product-name { display: block; font-weight: 600; }
+.product-date { display: block; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.price-cell { font-weight: 600; color: var(--text-primary); }
+.cost-cell { color: var(--text-secondary); }
+
+.profit-badge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(240,83,101,0.12);
+  color: var(--danger);
+
+  &.positive {
+    background: rgba(76,175,130,0.12);
+    color: var(--success);
+  }
+}
+
+.fragrance-pills { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.frag-pill {
+  display: inline-block;
+  background: var(--accent-dim);
+  color: var(--accent-light);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}

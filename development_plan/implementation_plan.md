@@ -9,6 +9,7 @@
 - **Backend Framework:** Node.js with TypeScript (Strict typing enabled).
 - **Database:** PostgreSQL (Initially mocked via an in-memory data layer in Node).
 - **Image Storage:** Base64 encoded strings stored directly in the database for simplicity.
+- **Mock Database:** The initial in-memory mock layer must come pre-populated with realistic seed data (Container Types, Fragrances, Products, Customers, Orders, and Label Templates) to allow immediate testing of all features without manual data entry.
 
 ## 2. Phase 1: Foundation & Master Data
 - Initialize the Angular workspace and Node.js backend.

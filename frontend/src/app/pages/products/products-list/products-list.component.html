@@ -1,0 +1,77 @@
+<div class="page-header">
+  <div class="page-title">
+    <h1>Products</h1>
+    <p>Manage your scented candle catalog</p>
+  </div>
+  <a routerLink="/products/create" class="btn btn-primary">
+    <span class="material-icons">add</span> Create Product
+  </a>
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar card">
+  <div class="search-box">
+    <span class="material-icons">search</span>
+    <input type="text" placeholder="Search products…" [(ngModel)]="searchQuery" (input)="onSearch()">
+  </div>
+  <div class="sort-box">
+    <span class="material-icons">sort</span>
+    <select [(ngModel)]="sortBy" (change)="onSortChange()">
+      <option *ngFor="let s of sortOptions" [value]="s.value">{{ s.label }}</option>
+    </select>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="card" style="padding: 0;">
+  <div *ngIf="loading" class="empty-state">
+    <span class="material-icons">hourglass_empty</span><p>Loading products…</p>
+  </div>
+  <div *ngIf="!loading && filteredProducts.length === 0" class="empty-state">
+    <span class="material-icons">inventory_2</span><p>No products found</p>
+  </div>
+
+  <table *ngIf="!loading && filteredProducts.length > 0" class="data-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Container</th>
+        <th>Weight</th>
+        <th>Price</th>
+        <th>Cost</th>
+        <th>Profit</th>
+        <th>Fragrances</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of filteredProducts">
+        <td>
+          <span class="product-name">{{ p.name }}</span>
+          <span class="product-date">{{ p.createdAt | date:'MMM d, y' }}</span>
+        </td>
+        <td>{{ p.containerTypeName }}</td>
+        <td>{{ p.weightGrams }}g</td>
+        <td class="price-cell">{{ formatPrice(p.price) }}</td>
+        <td class="cost-cell">{{ formatPrice(p.cost) }}</td>
+        <td>
+          <span class="profit-badge" [class.positive]="(p.profit ?? 0) > 0">
+            {{ formatPrice(p.profit ?? (p.price - p.cost)) }}
+          </span>
+        </td>
+        <td>
+          <div class="fragrance-pills">
+            <span *ngFor="let f of p.fragrances" class="frag-pill">
+              {{ f.fragranceName || f.fragranceId }} ({{ f.percentage }}%)
+            </span>
+          </div>
+        </td>
+        <td>
+          <button class="btn btn-danger" style="padding: 5px 8px;" (click)="deleteProduct(p.id)">
+            <span class="material-icons" style="font-size:16px">delete</span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
