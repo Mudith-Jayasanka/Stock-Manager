@@ -22,6 +22,12 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
             </a>
           </li>
           <li>
+            <a routerLink="/customers" routerLinkActive="active">
+              <span class="material-icons">people</span>
+              Customers
+            </a>
+          </li>
+          <li>
             <a routerLink="/products" routerLinkActive="active">
               <span class="material-icons">inventory_2</span>
               Products

@@ -1,0 +1,63 @@
+<div class="page-header">
+  <div class="page-title">
+    <h1>Customers</h1>
+    <p>View and search customer records</p>
+  </div>
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar card">
+  <div class="search-box">
+    <span class="material-icons">search</span>
+    <input type="text" placeholder="Search by name, phone, email, or address…" [(ngModel)]="searchQuery" (input)="onSearch()">
+  </div>
+</div>
+
+<!-- Table -->
+<div class="card" style="padding: 0;">
+  <div *ngIf="loading" class="empty-state">
+    <span class="material-icons">hourglass_empty</span><p>Loading customers…</p>
+  </div>
+  <div *ngIf="!loading && filteredCustomers.length === 0" class="empty-state">
+    <span class="material-icons">people</span><p>No customers found</p>
+  </div>
+
+  <table *ngIf="!loading && filteredCustomers.length > 0" class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Address</th>
+        <th>Joined</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of pagedCustomers">
+        <td>
+          <span class="customer-name">{{ c.fullName }}</span>
+        </td>
+        <td>{{ c.phone }}</td>
+        <td>{{ c.email || 'N/A' }}</td>
+        <td class="address-cell">{{ c.address }}</td>
+        <td>{{ c.createdAt | date:'MMM d, y' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="!loading && filteredCustomers.length > pageSize">
+    <div class="pagination-info">
+      Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ showingEnd }} of {{ filteredCustomers.length }} entries
+    </div>
+    <div class="pagination-controls">
+      <button class="btn btn-ghost" [disabled]="currentPage === 1" (click)="prevPage()">
+        <span class="material-icons">chevron_left</span> Prev
+      </button>
+      <span class="page-num">Page {{ currentPage }} of {{ totalPages }}</span>
+      <button class="btn btn-ghost" [disabled]="currentPage === totalPages" (click)="nextPage()">
+        Next <span class="material-icons">chevron_right</span>
+      </button>
+    </div>
+  </div>
+</div>
