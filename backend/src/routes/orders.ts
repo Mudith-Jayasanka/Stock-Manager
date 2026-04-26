@@ -26,9 +26,11 @@ async function enrichOrder(orderRow: any) {
 
   // Fetch Items
   const itemsRes = await query(`
-    SELECT oi.quantity, p.id, p.name, p.price, p.cost, p.weight_grams, p.container_type_id, p.created_at
+    SELECT oi.quantity, p.id, p.name, p.price, p.cost, p.weight_grams, p.container_type_id, p.created_at,
+           ct.name as container_type_name
     FROM order_items oi
     JOIN products p ON oi.product_id = p.id
+    LEFT JOIN container_types ct ON p.container_type_id = ct.id
     WHERE oi.order_id = $1
   `, [orderRow.id]);
 
@@ -42,6 +44,7 @@ async function enrichOrder(orderRow: any) {
       cost: row.cost,
       weightGrams: row.weight_grams,
       containerTypeId: row.container_type_id,
+      containerTypeName: row.container_type_name || 'Unknown',
       createdAt: row.created_at.toISOString()
     }
   }));

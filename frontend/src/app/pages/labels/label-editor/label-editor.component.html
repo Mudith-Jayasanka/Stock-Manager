@@ -57,7 +57,7 @@
   </div>
 
   <!-- ─── Center: Canvas ─────────────────────────────────────────────── -->
-  <div class="canvas-container">
+  <div class="canvas-container" #canvasContainer>
     <div class="canvas-wrapper">
       <canvas #canvasEl></canvas>
     </div>
@@ -108,9 +108,14 @@
           </div>
         </div>
 
-        <button class="btn btn-danger" style="width: 100%; justify-content: center; margin-top: 16px;" (click)="deleteSelected()">
-          <span class="material-icons">delete</span> Delete Element
-        </button>
+        <div style="display: flex; gap: 8px; margin-top: 16px;">
+          <button class="btn btn-ghost" style="flex: 1; justify-content: center;" (click)="duplicateSelected()" title="Ctrl+D">
+            <span class="material-icons">content_copy</span> Duplicate
+          </button>
+          <button class="btn btn-danger" style="flex: 1; justify-content: center;" (click)="deleteSelected()">
+            <span class="material-icons">delete</span> Delete
+          </button>
+        </div>
       </div>
 
     </div>

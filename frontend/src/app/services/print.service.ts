@@ -54,11 +54,25 @@ export class PrintService {
 
         // Text Variables
         if (config.customType === 'variable' || config.type === 'i-text' || config.type === 'text') {
-            const mappedField = config.mappedField;
-            if (mappedField) {
-               const value = this.resolveVariable(mappedField, order);
-               config.text = value || ' '; // fallback to empty space
+            let textStr = config.text || '';
+            
+            if (config.customType === 'variable' && config.mappedField) {
+                const value = this.resolveVariable(config.mappedField, order) || '';
+                // If the user modified the text to include a placeholder, replace it cleanly
+                if (textStr.includes('{{')) {
+                    textStr = textStr.replace(/\{\{\s*.*?\s*\}\}/g, value);
+                } else {
+                    // Otherwise replace the entire string
+                    textStr = value || ' ';
+                }
+            } else {
+                // Standard text block inline interpolation: "Hello {{ order.customer.fullName }}"
+                textStr = textStr.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (match: string, field: string) => {
+                    return this.resolveVariable(field, order) || '';
+                });
             }
+
+            config.text = textStr;
             config.fill = '#000000';
         }
 
@@ -134,6 +148,17 @@ export class PrintService {
         return '';
       }
     }
+    
+    // Format the date if the field is the order date
+    if (field === 'order.createdAt' && current) {
+      return String(current).substring(0, 10); // '2026-04-26'
+    }
+    
+    // Append 'g' for product weight
+    if (field === 'product.weightGrams' && current) {
+      return String(current) + 'g';
+    }
+
     return String(current);
   }
 
