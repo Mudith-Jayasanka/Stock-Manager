@@ -1,0 +1,54 @@
+<div class="page-header">
+  <div class="page-title">
+    <h1>Label Templates</h1>
+    <p>Design and manage your label templates</p>
+  </div>
+  <a routerLink="/labels/create" class="btn btn-primary">
+    <span class="material-icons">add</span> New Template
+  </a>
+</div>
+
+<div class="card" style="padding: 0;">
+  <div *ngIf="loading" class="empty-state">
+    <span class="material-icons">hourglass_empty</span>
+    <p>Loading templates…</p>
+  </div>
+
+  <div *ngIf="!loading && templates.length === 0" class="empty-state">
+    <span class="material-icons">dashboard_customize</span>
+    <p>No label templates found</p>
+  </div>
+
+  <table *ngIf="!loading && templates.length > 0" class="data-table">
+    <thead>
+      <tr>
+        <th>Template Name</th>
+        <th>Dimensions</th>
+        <th>Elements</th>
+        <th>Created</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let tmpl of templates">
+        <td>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="tmpl-icon"><span class="material-icons">aspect_ratio</span></div>
+            <span style="font-weight: 500;">{{ tmpl.name }}</span>
+          </div>
+        </td>
+        <td>{{ tmpl.widthMm }} × {{ tmpl.heightMm }} mm</td>
+        <td>{{ tmpl.elements.length }} element(s)</td>
+        <td>{{ tmpl.createdAt | date:'MMM d, y' }}</td>
+        <td style="text-align: right; padding-right: 16px;">
+          <a [routerLink]="['/labels', tmpl.id, 'edit']" class="btn btn-ghost" style="padding: 5px 8px; margin-right: 8px;">
+            <span class="material-icons" style="font-size:18px">edit</span>
+          </a>
+          <button class="btn btn-danger" style="padding: 5px 8px;" (click)="deleteTemplate(tmpl.id)">
+            <span class="material-icons" style="font-size:16px">delete</span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

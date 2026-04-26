@@ -70,7 +70,7 @@
             <td>{{ order.items.length }} item(s)</td>
             <td>
               <select class="inline-status-select" [ngClass]="getStatusClass(order.status)"
-                      [value]="order.status" (change)="updateStatus(order, $any($event.target).value)">
+                      [(ngModel)]="order.status" (ngModelChange)="updateStatus(order, $event)">
                 <option *ngFor="let s of statuses.slice(1)" [value]="s.value">{{ s.label }}</option>
               </select>
             </td>

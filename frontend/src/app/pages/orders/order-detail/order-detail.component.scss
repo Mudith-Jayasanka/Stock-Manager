@@ -1,0 +1,122 @@
+.order-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.order-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.order-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.info-card {
+  h2 { margin-bottom: 20px; font-size: 15px; color: var(--text-secondary); font-weight: 600; }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &.full-width { grid-column: 1 / -1; }
+
+  .label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  .value {
+    font-size: 14px;
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+}
+
+.product-name { display: block; font-weight: 500; font-size: 14px; }
+.product-id { display: block; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.order-summary {
+  padding: 16px 24px 24px;
+  background: var(--bg-hover);
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 var(--radius) var(--radius);
+  
+  .summary-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 40px;
+    
+    &.total {
+      color: var(--success);
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+}
+
+// ── Status & Print ────────────────────────────────────────────────────────────
+
+.status-card {
+  h2 { margin-bottom: 16px; font-size: 15px; color: var(--text-secondary); font-weight: 600; }
+  
+  .status-display {
+    display: flex;
+    .status-badge { font-size: 13px; padding: 6px 16px; }
+  }
+}
+
+.print-panel {
+  h3 {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px;
+    .material-icons { color: var(--accent); font-size: 18px; }
+  }
+
+  .print-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+}
+
+.template-list { display: flex; flex-direction: column; gap: 8px; }
+
+.template-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  gap: 8px;
+
+  .template-info {
+    display: flex; align-items: center; gap: 10px;
+    .material-icons { color: var(--text-muted); font-size: 18px; }
+  }
+
+  .tmpl-name { display: block; font-size: 13px; font-weight: 500; }
+}

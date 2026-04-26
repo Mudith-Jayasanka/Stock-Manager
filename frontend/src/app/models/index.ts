@@ -80,6 +80,7 @@ export interface CanvasElement {
   bold?: boolean;
   base64?: string;
   mappedField?: string;
+  config?: any;
 }
 
 export interface LabelTemplate {
@@ -112,3 +113,5 @@ export const PRODUCT_MAPPING_FIELDS: { label: string; value: string }[] = [
   { label: 'Product Weight (g)', value: 'product.weightGrams' },
   { label: 'Container Type', value: 'product.containerTypeName' },
 ];
+
+export const MAPPING_FIELDS = [...ORDER_MAPPING_FIELDS, ...PRODUCT_MAPPING_FIELDS];

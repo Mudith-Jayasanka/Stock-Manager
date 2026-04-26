@@ -1,0 +1,126 @@
+<div class="page-header">
+  <div class="page-title">
+    <h1>Order Details</h1>
+    <p *ngIf="order">ID: {{ order.id }} • {{ order.createdAt | date:'medium' }}</p>
+  </div>
+  <a routerLink="/orders" class="btn btn-ghost">
+    <span class="material-icons">arrow_back</span> Back to Orders
+  </a>
+</div>
+
+<div *ngIf="loading" class="card empty-state">
+  <span class="material-icons">hourglass_empty</span>
+  <p>Loading order details…</p>
+</div>
+
+<div *ngIf="error" class="card empty-state">
+  <span class="material-icons" style="color: var(--danger)">error_outline</span>
+  <p>{{ error }}</p>
+</div>
+
+<div class="order-layout" *ngIf="!loading && order">
+
+  <div class="order-main">
+    <!-- ─── Customer Info ─────────────────────────────────────────────── -->
+    <div class="card info-card">
+      <h2>Customer Information</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">Full Name</span>
+          <span class="value">{{ order.customer?.fullName }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Phone Number</span>
+          <span class="value">{{ order.customer?.phone }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Email</span>
+          <span class="value">{{ order.customer?.email || 'N/A' }}</span>
+        </div>
+        <div class="info-item full-width">
+          <span class="label">Delivery Address</span>
+          <span class="value">{{ order.customer?.address }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Order Items ─────────────────────────────────────────────────── -->
+    <div class="card info-card" style="padding: 0;">
+      <div style="padding: 24px 24px 16px;">
+        <h2>Order Items</h2>
+      </div>
+      
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Container</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th style="text-align: right">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of order.items">
+            <td>
+              <span class="product-name">{{ item.product?.name || 'Unknown Product' }}</span>
+              <span class="product-id">{{ item.productId }}</span>
+            </td>
+            <td>{{ item.product?.containerTypeName || 'Unknown' }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>Rs. {{ (item.product?.price || 0) | number }}</td>
+            <td style="text-align: right; font-weight: 600;">
+              Rs. {{ ((item.product?.price || 0) * item.quantity) | number }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="order-summary">
+        <div class="summary-row total">
+          <span>Total Amount</span>
+          <span>Rs. {{ orderTotal | number }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="order-sidebar">
+    <!-- ─── Status ──────────────────────────────────────────────────────── -->
+    <div class="card status-card">
+      <h2>Current Status</h2>
+      <div class="status-display">
+        <span class="status-badge" [ngClass]="order.status">
+          {{ order.status }}
+        </span>
+      </div>
+    </div>
+
+    <!-- ─── Print Panel ─────────────────────────────────────────────────── -->
+    <div class="card print-panel">
+      <h3>
+        <span class="material-icons">print</span>
+        Print Labels
+      </h3>
+      <p class="print-hint">Print labels for this specific order</p>
+
+      <div class="template-list">
+        <div class="template-item" *ngFor="let tmpl of templates">
+          <div class="template-info">
+            <span class="material-icons">dashboard_customize</span>
+            <div>
+              <span class="tmpl-name">{{ tmpl.name }}</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" (click)="printTemplate(tmpl.id)">
+            <span class="material-icons">print</span>
+          </button>
+        </div>
+        <div *ngIf="templates.length === 0" class="empty-state" style="padding: 24px;">
+          <p>No templates yet</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

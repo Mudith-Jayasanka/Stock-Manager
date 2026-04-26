@@ -1,0 +1,121 @@
+<div class="page-header">
+  <div class="page-title">
+    <h1>{{ templateId === 'create' ? 'Create' : 'Edit' }} Template</h1>
+  </div>
+  <div style="display: flex; gap: 12px;">
+    <a routerLink="/labels" class="btn btn-ghost">Cancel</a>
+    <button class="btn btn-primary" (click)="saveTemplate()" [disabled]="!name.trim() || saving">
+      <span class="material-icons">{{ saving ? 'hourglass_empty' : 'save' }}</span>
+      {{ saving ? 'Saving…' : 'Save Template' }}
+    </button>
+  </div>
+</div>
+
+<div class="editor-layout">
+
+  <!-- ─── Left Sidebar: Tools & Settings ─────────────────────────────── -->
+  <div class="sidebar">
+    <div class="card panel">
+      <h3>Template Settings</h3>
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="name" placeholder="e.g. 50x30 Front Label">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Width (mm)</label>
+          <input type="number" [(ngModel)]="widthMm" (change)="updateCanvasSize()">
+        </div>
+        <div class="form-group">
+          <label>Height (mm)</label>
+          <input type="number" [(ngModel)]="heightMm" (change)="updateCanvasSize()">
+        </div>
+      </div>
+    </div>
+
+    <div class="card panel">
+      <h3>Add Elements</h3>
+      <div class="tools-grid">
+        <button class="tool-btn" (click)="addText()">
+          <span class="material-icons">title</span>
+          Text
+        </button>
+        <button class="tool-btn" (click)="addVariable()">
+          <span class="material-icons">data_object</span>
+          Variable
+        </button>
+        <button class="tool-btn" (click)="addShape('rect')">
+          <span class="material-icons">crop_square</span>
+          Rectangle
+        </button>
+        <button class="tool-btn" (click)="addShape('circle')">
+          <span class="material-icons">circle</span>
+          Circle
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Center: Canvas ─────────────────────────────────────────────── -->
+  <div class="canvas-container">
+    <div class="canvas-wrapper">
+      <canvas #canvasEl></canvas>
+    </div>
+    <div class="canvas-ruler">
+      {{ widthMm }}mm × {{ heightMm }}mm (Scaled for view)
+    </div>
+  </div>
+
+  <!-- ─── Right Sidebar: Properties ──────────────────────────────────── -->
+  <div class="sidebar">
+    <div class="card panel properties-panel">
+      <h3>Properties</h3>
+      
+      <div *ngIf="!activeObject" class="empty-state">
+        <span class="material-icons">ads_click</span>
+        <p>Select an element to view properties</p>
+      </div>
+
+      <div *ngIf="activeObject" class="props-content">
+        <!-- Variable Mapping -->
+        <div class="form-group mapping-box" *ngIf="isVariable">
+          <label style="color: var(--accent-light);">
+            <span class="material-icons" style="font-size:14px">link</span> 
+            Variable Mapping
+          </label>
+          <select [(ngModel)]="mappedField">
+            <option value="">Select variable data…</option>
+            <option *ngFor="let v of availableVariables" [value]="v.value">{{ v.label }}</option>
+          </select>
+        </div>
+
+        <!-- Font Size -->
+        <div class="form-group" *ngIf="isText">
+          <label>Font Size (px)</label>
+          <input type="number" [(ngModel)]="fontSize" min="8" max="150" style="width: 100%; padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); outline: none;">
+        </div>
+
+        <!-- Layer Controls -->
+        <div class="form-group layer-controls">
+          <label>Layer Order</label>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-ghost" (click)="bringForward()" title="Bring Forward">
+              <span class="material-icons">flip_to_front</span>
+            </button>
+            <button class="btn btn-ghost" (click)="sendBackwards()" title="Send Backwards">
+              <span class="material-icons">flip_to_back</span>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn btn-danger" style="width: 100%; justify-content: center; margin-top: 16px;" (click)="deleteSelected()">
+          <span class="material-icons">delete</span> Delete Element
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div *ngIf="toast" class="toast" [class]="'toast ' + toast.type">{{ toast.message }}</div>

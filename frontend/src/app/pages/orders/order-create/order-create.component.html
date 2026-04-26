@@ -1,0 +1,120 @@
+<div class="page-header">
+  <div class="page-title">
+    <h1>Create Order</h1>
+    <p>Look up or create a customer and select products</p>
+  </div>
+  <a routerLink="/orders" class="btn btn-ghost">
+    <span class="material-icons">arrow_back</span> Back
+  </a>
+</div>
+
+<form class="create-form" (ngSubmit)="saveOrder()">
+  <div class="form-layout">
+
+    <!-- ─── Customer Details ─────────────────────────────────────────────── -->
+    <div class="form-left">
+      <div class="card form-card">
+        <div class="card-header">
+          <h2>Customer Details</h2>
+          <span class="status-badge" [class.delivered]="isExistingCustomer" [class.pending]="!isExistingCustomer && customerPhone.length > 5">
+            {{ isExistingCustomer ? 'Existing Customer' : (customerPhone.length > 5 ? 'New Customer' : 'Enter Phone') }}
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Phone Number *</label>
+          <div class="input-with-icon">
+            <span class="material-icons search-icon" *ngIf="!searchingCustomer">search</span>
+            <span class="material-icons spinner" *ngIf="searchingCustomer">sync</span>
+            <input type="text" [(ngModel)]="customerPhone" name="phone" (input)="onPhoneChange()" 
+                   placeholder="e.g. 0771234567" required autocomplete="off">
+          </div>
+          <small class="hint">Enter phone number to automatically look up existing customers.</small>
+        </div>
+
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" [(ngModel)]="customerFullName" name="fullName" placeholder="e.g. Nimal Silva" required>
+        </div>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" [(ngModel)]="customerEmail" name="email" placeholder="e.g. nimal@example.com">
+        </div>
+
+        <div class="form-group">
+          <label>Delivery Address *</label>
+          <textarea [(ngModel)]="customerAddress" name="address" rows="3" placeholder="Enter full delivery address" required></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Order Items ─────────────────────────────────────────────────── -->
+    <div class="form-right">
+      <div class="card form-card">
+        <h2>Order Items</h2>
+
+        <!-- Product Picker -->
+        <div class="product-picker">
+          <select [(ngModel)]="selectedProductId" name="productPicker">
+            <option value="">Select a product to add…</option>
+            <option *ngFor="let p of availableProducts" [value]="p.id">{{ p.name }} (Rs. {{ p.price | number }})</option>
+          </select>
+          <button type="button" class="btn btn-primary" (click)="addProduct()" [disabled]="!selectedProductId">
+            <span class="material-icons">add</span> Add
+          </button>
+        </div>
+
+        <!-- Items List -->
+        <div class="items-list" *ngIf="orderItems.length > 0">
+          <div class="order-item" *ngFor="let item of orderItems; let i = index">
+            <div class="item-info">
+              <span class="item-name">{{ item.product.name }}</span>
+              <span class="item-price">Rs. {{ item.product.price | number }}</span>
+            </div>
+            
+            <div class="item-controls">
+              <div class="qty-control">
+                <button type="button" (click)="item.quantity = Math.max(1, item.quantity - 1)">-</button>
+                <input type="number" [(ngModel)]="item.quantity" [name]="'qty_' + i" min="1">
+                <button type="button" (click)="item.quantity = item.quantity + 1">+</button>
+              </div>
+              <div class="item-total">
+                Rs. {{ (item.product.price * item.quantity) | number }}
+              </div>
+              <button type="button" class="btn btn-danger" style="padding: 5px 8px;" (click)="removeItem(i)">
+                <span class="material-icons" style="font-size:14px">close</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="orderItems.length === 0" class="empty-state" style="padding: 32px;">
+          <span class="material-icons">shopping_bag</span>
+          <p>Add at least one product</p>
+        </div>
+
+        <!-- Order Total -->
+        <div class="order-summary" *ngIf="orderItems.length > 0">
+          <div class="summary-row total">
+            <span>Total Amount</span>
+            <span>Rs. {{ orderTotal | number }}</span>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ─── Save Button ─────────────────────────────────────────────────────── -->
+  <div class="form-actions">
+    <a routerLink="/orders" class="btn btn-ghost">Cancel</a>
+    <button type="submit" class="btn btn-primary" [disabled]="!isFormValid || saving">
+      <span class="material-icons">{{ saving ? 'hourglass_empty' : 'check_circle' }}</span>
+      {{ saving ? 'Creating…' : 'Create Order' }}
+    </button>
+  </div>
+</form>
+
+<div *ngIf="toast" class="toast" [class]="'toast ' + toast.type">{{ toast.message }}</div>

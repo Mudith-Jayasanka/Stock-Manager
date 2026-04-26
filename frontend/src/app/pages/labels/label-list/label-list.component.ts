@@ -1,24 +1,41 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { LabelTemplatesService } from '../../../services/label-templates.service';
+import { LabelTemplate } from '../../../models';
 
 @Component({
   selector: 'app-label-list',
   standalone: true,
-  imports: [RouterLink],
-  template: `
-    <div class="page-header">
-      <div class="page-title">
-        <h1>Label Templates</h1>
-        <p>Design and manage your label templates</p>
-      </div>
-      <a routerLink="/labels/create" class="btn btn-primary">
-        <span class="material-icons">add</span> New Template
-      </a>
-    </div>
-    <div class="card empty-state">
-      <span class="material-icons">construction</span>
-      <p>Label template list — coming soon (Phase 4)</p>
-    </div>
-  `,
+  imports: [CommonModule, RouterLink],
+  templateUrl: './label-list.component.html',
+  styleUrl: './label-list.component.scss',
 })
-export class LabelListComponent {}
+export class LabelListComponent implements OnInit {
+  templates: LabelTemplate[] = [];
+  loading = true;
+
+  constructor(private templatesService: LabelTemplatesService) {}
+
+  ngOnInit() {
+    this.loadTemplates();
+  }
+
+  loadTemplates() {
+    this.loading = true;
+    this.templatesService.getTemplates().subscribe({
+      next: (data) => {
+        this.templates = data;
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      }
+    });
+  }
+
+  deleteTemplate(id: string) {
+    if (!confirm('Are you sure you want to delete this template?')) return;
+    this.templatesService.deleteTemplate(id).subscribe(() => this.loadTemplates());
+  }
+}

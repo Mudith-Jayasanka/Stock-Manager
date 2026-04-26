@@ -1,0 +1,10 @@
+.tmpl-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--accent-dim);
+  border-radius: var(--radius-sm);
+  .material-icons { color: var(--accent); font-size: 16px; }
+}
