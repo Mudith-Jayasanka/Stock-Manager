@@ -34,5 +34,5 @@ app.use((_req, res) => {
 app.listen(PORT, () => {
   console.log(`\n🚀  Backend running at http://localhost:${PORT}`);
   console.log(`   Health: http://localhost:${PORT}/api/health`);
-  console.log(`   Using: Mock in-memory database (pre-seeded)\n`);
+  console.log(`   Using: PostgreSQL database (Neon)`);
 });

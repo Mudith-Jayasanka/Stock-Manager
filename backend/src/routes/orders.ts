@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { orders, customers, products } from '../db/mockDb';
+import { query } from '../db';
 import { Order, OrderStatus, Customer } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,97 +13,162 @@ function sanitizePhone(phone: string): string {
 }
 
 // ── Utility: enrich order with customer and product details ───────────────────
-function enrichOrder(order: Order) {
-  const customer = customers.find((c) => c.id === order.customerId);
-  const enrichedItems = order.items.map((item) => ({
-    ...item,
-    product: products.find((p) => p.id === item.productId),
+async function enrichOrder(orderRow: any) {
+  // Fetch Customer
+  const custRes = await query('SELECT * FROM customers WHERE id = $1', [orderRow.customer_id]);
+  let customer = null;
+  if (custRes.rows.length > 0) {
+    const c = custRes.rows[0];
+    customer = {
+      id: c.id, phone: c.phone, fullName: c.full_name, email: c.email, address: c.address, createdAt: c.created_at.toISOString()
+    };
+  }
+
+  // Fetch Items
+  const itemsRes = await query(`
+    SELECT oi.quantity, p.id, p.name, p.price, p.cost, p.weight_grams, p.container_type_id, p.created_at
+    FROM order_items oi
+    JOIN products p ON oi.product_id = p.id
+    WHERE oi.order_id = $1
+  `, [orderRow.id]);
+
+  const items = itemsRes.rows.map(row => ({
+    productId: row.id,
+    quantity: row.quantity,
+    product: {
+      id: row.id,
+      name: row.name,
+      price: row.price,
+      cost: row.cost,
+      weightGrams: row.weight_grams,
+      containerTypeId: row.container_type_id,
+      createdAt: row.created_at.toISOString()
+    }
   }));
-  return { ...order, customer, items: enrichedItems };
+
+  return {
+    id: orderRow.id,
+    customerId: orderRow.customer_id,
+    status: orderRow.status,
+    createdAt: orderRow.created_at.toISOString(),
+    customer,
+    items
+  };
 }
 
 // ─── List Orders ──────────────────────────────────────────────────────────────
-router.get('/', (req: Request, res: Response) => {
-  const { status } = req.query as { status?: OrderStatus };
-  let result = status ? orders.filter((o) => o.status === status) : [...orders];
-  result = result.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  res.json(result.map(enrichOrder));
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    const { status } = req.query as { status?: OrderStatus };
+    let result;
+    if (status) {
+      result = await query('SELECT * FROM orders WHERE status = $1 ORDER BY created_at DESC', [status]);
+    } else {
+      result = await query('SELECT * FROM orders ORDER BY created_at DESC');
+    }
+    
+    const enriched = await Promise.all(result.rows.map(enrichOrder));
+    res.json(enriched);
+  } catch (err) {
+    res.status(500).json({ error: 'Database error' });
+  }
 });
 
 // ─── Get Single Order ─────────────────────────────────────────────────────────
-router.get('/:id', (req: Request, res: Response) => {
-  const order = orders.find((o) => o.id === req.params.id);
-  if (!order) {
-    res.status(404).json({ error: 'Order not found.' });
-    return;
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const result = await query('SELECT * FROM orders WHERE id = $1', [req.params.id]);
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'Order not found.' });
+      return;
+    }
+    const enriched = await enrichOrder(result.rows[0]);
+    res.json(enriched);
+  } catch (err) {
+    res.status(500).json({ error: 'Database error' });
   }
-  res.json(enrichOrder(order));
 });
 
 // ─── Create Order ─────────────────────────────────────────────────────────────
-router.post('/', (req: Request, res: Response) => {
-  const body = req.body as {
-    customer: Omit<Customer, 'id' | 'createdAt'>;
-    items: { productId: string; quantity: number }[];
-  };
-
-  if (!body.items || body.items.length === 0) {
-    res.status(400).json({ error: 'An order must contain at least one item.' });
-    return;
-  }
-
-  // Resolve customer — auto-create if new phone number
-  const sanitizedPhone = sanitizePhone(body.customer.phone);
-  let customer = customers.find((c) => c.phone === sanitizedPhone);
-
-  if (!customer) {
-    customer = {
-      id: `cust-${uuidv4()}`,
-      ...body.customer,
-      phone: sanitizedPhone,
-      createdAt: new Date().toISOString(),
+router.post('/', async (req: Request, res: Response) => {
+  try {
+    const body = req.body as {
+      customer: Omit<Customer, 'id' | 'createdAt'>;
+      items: { productId: string; quantity: number }[];
     };
-    customers.push(customer);
-  } else {
-    // Update customer details (in case they changed)
-    const idx = customers.findIndex((c) => c.id === customer!.id);
-    customers[idx] = { ...customers[idx], ...body.customer, phone: sanitizedPhone };
-    customer = customers[idx];
-  }
 
-  // Validate all products exist
-  for (const item of body.items) {
-    if (!products.find((p) => p.id === item.productId)) {
-      res.status(400).json({ error: `Product not found: ${item.productId}` });
+    if (!body.items || body.items.length === 0) {
+      res.status(400).json({ error: 'An order must contain at least one item.' });
       return;
     }
-  }
 
-  const newOrder: Order = {
-    id: `ord-${uuidv4()}`,
-    customerId: customer.id,
-    items: body.items,
-    status: 'pending',
-    createdAt: new Date().toISOString(),
-  };
-  orders.push(newOrder);
-  res.status(201).json(enrichOrder(newOrder));
+    const sanitizedPhone = sanitizePhone(body.customer.phone);
+    
+    // START TRANSACTION (simulate with single queries or let it be for now, simple approach)
+    let customerId;
+    const existingCust = await query('SELECT * FROM customers WHERE phone = $1', [sanitizedPhone]);
+    
+    if (existingCust.rows.length > 0) {
+      customerId = existingCust.rows[0].id;
+      await query(
+        'UPDATE customers SET full_name = $1, email = $2, address = $3 WHERE id = $4',
+        [body.customer.fullName, body.customer.email, body.customer.address, customerId]
+      );
+    } else {
+      customerId = `cust-${uuidv4()}`;
+      await query(
+        'INSERT INTO customers (id, phone, full_name, email, address) VALUES ($1, $2, $3, $4, $5)',
+        [customerId, sanitizedPhone, body.customer.fullName, body.customer.email, body.customer.address]
+      );
+    }
+
+    // Validate products exist
+    for (const item of body.items) {
+      const pRes = await query('SELECT id FROM products WHERE id = $1', [item.productId]);
+      if (pRes.rows.length === 0) {
+        res.status(400).json({ error: `Product not found: ${item.productId}` });
+        return;
+      }
+    }
+
+    const orderId = `ord-${uuidv4()}`;
+    const orderResult = await query(
+      'INSERT INTO orders (id, customer_id, status) VALUES ($1, $2, $3) RETURNING *',
+      [orderId, customerId, 'pending']
+    );
+
+    for (const item of body.items) {
+      await query(
+        'INSERT INTO order_items (order_id, product_id, quantity) VALUES ($1, $2, $3)',
+        [orderId, item.productId, item.quantity]
+      );
+    }
+
+    const enriched = await enrichOrder(orderResult.rows[0]);
+    res.status(201).json(enriched);
+  } catch (err) {
+    res.status(500).json({ error: 'Database error' });
+  }
 });
 
 // ─── Update Order Status ──────────────────────────────────────────────────────
-router.patch('/:id/status', (req: Request, res: Response) => {
-  const { status } = req.body as { status: OrderStatus };
-  if (!VALID_STATUSES.includes(status)) {
-    res.status(400).json({ error: `Invalid status. Valid values: ${VALID_STATUSES.join(', ')}` });
-    return;
+router.patch('/:id/status', async (req: Request, res: Response) => {
+  try {
+    const { status } = req.body as { status: OrderStatus };
+    if (!VALID_STATUSES.includes(status)) {
+      res.status(400).json({ error: `Invalid status. Valid values: ${VALID_STATUSES.join(', ')}` });
+      return;
+    }
+    const result = await query('UPDATE orders SET status = $1 WHERE id = $2 RETURNING *', [status, req.params.id]);
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'Order not found.' });
+      return;
+    }
+    const enriched = await enrichOrder(result.rows[0]);
+    res.json(enriched);
+  } catch (err) {
+    res.status(500).json({ error: 'Database error' });
   }
-  const idx = orders.findIndex((o) => o.id === req.params.id);
-  if (idx === -1) {
-    res.status(404).json({ error: 'Order not found.' });
-    return;
-  }
-  orders[idx].status = status;
-  res.json(enrichOrder(orders[idx]));
 });
 
 export default router;
