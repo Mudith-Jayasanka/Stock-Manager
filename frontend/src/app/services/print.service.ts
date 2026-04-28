@@ -162,7 +162,9 @@ export class PrintService {
     return String(current);
   }
 
-  private triggerPrint(images: string[], widthMm: number, heightMm: number) {
+  private triggerPrint(images: string[], widthCm: number, heightCm: number) {
+    const widthMm = widthCm * 10;
+    const heightMm = heightCm * 10;
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
       alert('Please allow popups to print labels.');
@@ -172,21 +174,38 @@ export class PrintService {
     let html = `
       <html>
         <head>
-          <title>Print Labels</title>
+          <title></title>
           <style>
-            @page { size: ${widthMm}mm ${heightMm}mm; margin: 0; }
-            body { margin: 0; padding: 0; background: #fff; }
+            @page { 
+              size: ${widthMm}mm ${heightMm}mm; 
+              margin: 0 !important; 
+            }
+            html, body { 
+              margin: 0 !important; 
+              padding: 0 !important; 
+              background: #fff;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
             .page { 
               width: ${widthMm}mm; 
               height: ${heightMm}mm; 
+              page-break-after: always;
+              page-break-inside: avoid;
+              overflow: hidden;
               display: flex;
               justify-content: center;
               align-items: center;
-              page-break-after: always;
-              overflow: hidden;
             }
-            .page:last-child { page-break-after: auto; }
-            img { width: 100%; height: 100%; object-fit: contain; }
+            .page:last-child { 
+              page-break-after: auto; 
+            }
+            img { 
+              width: ${widthMm}mm;
+              height: ${heightMm}mm;
+              display: block;
+              object-fit: fill;
+            }
           </style>
         </head>
         <body>
@@ -202,7 +221,7 @@ export class PrintService {
             setTimeout(function() {
               window.print();
               window.close();
-            }, 500);
+            }, 300);
           };
         </script>
         </body>
