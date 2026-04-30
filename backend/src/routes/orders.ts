@@ -53,6 +53,7 @@ async function enrichOrder(orderRow: any) {
     id: orderRow.id,
     customerId: orderRow.customer_id,
     status: orderRow.status,
+    cancelReason: orderRow.cancel_reason,
     createdAt: orderRow.created_at.toISOString(),
     customer,
     items
@@ -157,12 +158,19 @@ router.post('/', async (req: Request, res: Response) => {
 // ─── Update Order Status ──────────────────────────────────────────────────────
 router.patch('/:id/status', async (req: Request, res: Response) => {
   try {
-    const { status } = req.body as { status: OrderStatus };
+    const { status, cancelReason } = req.body as { status: OrderStatus; cancelReason?: string };
     if (!VALID_STATUSES.includes(status)) {
       res.status(400).json({ error: `Invalid status. Valid values: ${VALID_STATUSES.join(', ')}` });
       return;
     }
-    const result = await query('UPDATE orders SET status = $1 WHERE id = $2 RETURNING *', [status, req.params.id]);
+    
+    let result;
+    if (status === 'cancelled' && cancelReason) {
+      result = await query('UPDATE orders SET status = $1, cancel_reason = $2 WHERE id = $3 RETURNING *', [status, cancelReason, req.params.id]);
+    } else {
+      result = await query('UPDATE orders SET status = $1 WHERE id = $2 RETURNING *', [status, req.params.id]);
+    }
+
     if (result.rows.length === 0) {
       res.status(404).json({ error: 'Order not found.' });
       return;

@@ -59,6 +59,7 @@ export interface Order {
   customerId: string;
   items: OrderItem[];
   status: OrderStatus;
+  cancelReason?: string;
   createdAt: string;
 }
 

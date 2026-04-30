@@ -70,7 +70,7 @@
             <td>{{ order.items.length }} item(s)</td>
             <td>
               <select class="inline-status-select" [ngClass]="getStatusClass(order.status)"
-                      [(ngModel)]="order.status" (ngModelChange)="updateStatus(order, $event)">
+                      [ngModel]="order.status" (ngModelChange)="updateStatus(order, $event)">
                 <option *ngFor="let s of statuses.slice(1)" [value]="s.value">{{ s.label }}</option>
               </select>
             </td>
@@ -115,4 +115,32 @@
     </div>
   </div>
 
+</div>
+
+<!-- Cancellation Reason Modal -->
+<div class="modal-overlay" *ngIf="showCancelModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Cancel Order</h3>
+      <button class="close-btn" (click)="closeCancelModal()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Please select a reason for cancelling order <strong>{{ orderToCancel?.id }}</strong>:</p>
+      
+      <div class="form-group">
+        <label>Cancellation Reason</label>
+        <select [(ngModel)]="cancelReason">
+          <option *ngFor="let reason of cancelReasons" [value]="reason">{{ reason }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" (click)="closeCancelModal()">Keep Order</button>
+      <button class="btn btn-danger" (click)="confirmCancel()" [disabled]="!cancelReason">
+        Confirm Cancellation
+      </button>
+    </div>
+  </div>
 </div>

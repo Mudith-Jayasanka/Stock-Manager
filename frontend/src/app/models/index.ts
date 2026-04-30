@@ -60,6 +60,7 @@ export interface Order {
   customer?: Customer;
   items: OrderItem[];
   status: OrderStatus;
+  cancelReason?: string;
   createdAt: string;
 }
 

@@ -21,6 +21,17 @@ export class OrdersListComponent implements OnInit {
   selectedOrderIds = new Set<string>();
   loading = true;
 
+  showCancelModal = false;
+  orderToCancel: Order | null = null;
+  cancelReason = '';
+  readonly cancelReasons = [
+    'Customer request',
+    'Out of stock',
+    'Duplicate order',
+    'Payment failed',
+    'Other'
+  ];
+
   readonly statuses: { value: OrderStatus | ''; label: string }[] = [
     { value: '', label: 'All Orders' },
     { value: 'pending', label: 'Pending' },
@@ -70,10 +81,33 @@ export class OrdersListComponent implements OnInit {
   get selectedCount(): number { return this.selectedOrderIds.size; }
 
   updateStatus(order: Order, status: string) {
+    if (status === 'cancelled') {
+      this.orderToCancel = order;
+      this.cancelReason = this.cancelReasons[0];
+      this.showCancelModal = true;
+      return;
+    }
+
     this.ordersService.updateStatus(order.id, status as OrderStatus).subscribe(updated => {
       const idx = this.orders.findIndex(o => o.id === order.id);
       if (idx !== -1) this.orders[idx] = updated;
     });
+  }
+
+  confirmCancel() {
+    if (!this.orderToCancel || !this.cancelReason) return;
+
+    this.ordersService.updateStatus(this.orderToCancel.id, 'cancelled', this.cancelReason).subscribe(updated => {
+      const idx = this.orders.findIndex(o => o.id === this.orderToCancel!.id);
+      if (idx !== -1) this.orders[idx] = updated;
+      this.closeCancelModal();
+    });
+  }
+
+  closeCancelModal() {
+    this.showCancelModal = false;
+    this.orderToCancel = null;
+    this.cancelReason = '';
   }
 
   printTemplate(templateId: string) {

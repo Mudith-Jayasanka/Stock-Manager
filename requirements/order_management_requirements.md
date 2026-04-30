@@ -38,7 +38,8 @@ Orders progress through a specific lifecycle. The statuses have been optimized f
 3. **Packaging:** The products are finished, and the order is being packed for shipment.
 4. **Dispatched / Shipped:** The packaged order has been handed over to the delivery courier.
 5. **Delivered:** The order has successfully reached the customer.
-6. **Cancelled:** The order was cancelled (this can be triggered at any stage prior to delivery).
+6. **Cancelled:** The order was cancelled (this can be triggered at any stage prior to delivery). 
+   - **Required Metadata:** Every cancellation must be accompanied by a reason selected from a standardized list (e.g., Customer Request, Out of Stock, Duplicate Order).
 
 ## 4. Order Printing & Label Generation
 Users can print labels directly from inside a specific order, or in bulk from the main Orders Dashboard.
@@ -55,3 +56,4 @@ Users can print labels directly from inside a specific order, or in bulk from th
 ### Core Printing Mechanics
 - **Data Injection:** The system automatically injects Order and Product data into the template's globally mapped variables.
 - **Browser Integration:** To ensure reliability across all browsers, the system generates a high-resolution, print-ready document (e.g., PDF) in the background and automatically invokes the browser's native print dialog (`window.print()`), allowing the user to select their physical label printer.
+'s native print dialog (`window.print()`), allowing the user to select their physical label printer.

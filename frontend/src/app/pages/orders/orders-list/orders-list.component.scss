@@ -144,3 +144,59 @@ tr.selected td { background: rgba(124,106,247,0.06); }
   .tmpl-name { display: block; font-size: 13px; font-weight: 500; }
   .tmpl-size { display: block; font-size: 11px; color: var(--text-muted); }
 }
+
+// ── Modal ──────────────────────────────────────────────────────────────────
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow);
+  animation: modalIn 0.25s ease-out;
+
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h3 { margin: 0; font-size: 18px; }
+    .close-btn {
+      background: none; border: none; color: var(--text-muted);
+      cursor: pointer; display: flex; align-items: center;
+      &:hover { color: var(--text-primary); }
+    }
+  }
+
+  .modal-body {
+    padding: 20px;
+    p { color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
+  }
+
+  .modal-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+}
+
+@keyframes modalIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

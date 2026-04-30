@@ -26,7 +26,7 @@ export class OrdersService {
     return this.http.post<Order>(this.base, payload);
   }
 
-  updateStatus(id: string, status: OrderStatus): Observable<Order> {
-    return this.http.patch<Order>(`${this.base}/${id}/status`, { status });
+  updateStatus(id: string, status: OrderStatus, cancelReason?: string): Observable<Order> {
+    return this.http.patch<Order>(`${this.base}/${id}/status`, { status, cancelReason });
   }
 }
