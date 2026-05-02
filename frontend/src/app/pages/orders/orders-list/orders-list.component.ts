@@ -6,6 +6,7 @@ import { OrdersService } from '../../../services/orders.service';
 import { LabelTemplatesService } from '../../../services/label-templates.service';
 import { PrintService } from '../../../services/print.service';
 import { Order, OrderStatus, LabelTemplate } from '../../../models';
+import { OrderListFilter } from '../../../services/orders.service';
 
 @Component({
   selector: 'app-orders-list',
@@ -17,7 +18,7 @@ import { Order, OrderStatus, LabelTemplate } from '../../../models';
 export class OrdersListComponent implements OnInit {
   orders: Order[] = [];
   templates: LabelTemplate[] = [];
-  selectedStatus: OrderStatus | '' = '';
+  selectedStatus: OrderListFilter | '' = 'ongoing';
   selectedOrderIds = new Set<string>();
   loading = true;
 
@@ -32,8 +33,20 @@ export class OrdersListComponent implements OnInit {
     'Other'
   ];
 
-  readonly statuses: { value: OrderStatus | ''; label: string }[] = [
-    { value: '', label: 'All Orders' },
+  readonly ongoingTooltip = 'Shows Pending, Making, Packaging, Dispatched, and Delivered orders.';
+
+  readonly filters: { value: OrderListFilter | ''; label: string; title?: string }[] = [
+    { value: 'ongoing', label: 'Ongoing', title: this.ongoingTooltip },
+    { value: '', label: 'All' },
+    { value: 'pending', label: 'Pending' },
+    { value: 'making', label: 'Making' },
+    { value: 'packaging', label: 'Packaging' },
+    { value: 'dispatched', label: 'Dispatched' },
+    { value: 'delivered', label: 'Delivered' },
+    { value: 'cancelled', label: 'Cancelled' },
+  ];
+
+  readonly statuses: { value: OrderStatus; label: string }[] = [
     { value: 'pending', label: 'Pending' },
     { value: 'making', label: 'Making' },
     { value: 'packaging', label: 'Packaging' },
@@ -56,7 +69,7 @@ export class OrdersListComponent implements OnInit {
   loadOrders() {
     this.loading = true;
     const status = this.selectedStatus || undefined;
-    this.ordersService.getOrders(status as OrderStatus).subscribe({
+    this.ordersService.getOrders(status).subscribe({
       next: (data) => { this.orders = data; this.selectedOrderIds.clear(); this.loading = false; },
       error: () => { this.loading = false; }
     });
@@ -121,5 +134,9 @@ export class OrdersListComponent implements OnInit {
 
   getStatusLabel(status: string): string {
     return this.statuses.find(s => s.value === status)?.label ?? status;
+  }
+
+  getSelectedFilterTitle(): string | null {
+    return this.filters.find(f => f.value === this.selectedStatus)?.title ?? null;
   }
 }

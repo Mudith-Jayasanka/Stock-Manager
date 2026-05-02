@@ -23,8 +23,8 @@
         <span *ngIf="selectedCount > 0" class="selection-badge">{{ selectedCount }} selected</span>
       </div>
       <div class="toolbar-right">
-        <select [(ngModel)]="selectedStatus" (change)="onStatusFilterChange()" class="status-filter">
-          <option *ngFor="let s of statuses" [value]="s.value">{{ s.label }}</option>
+        <select [(ngModel)]="selectedStatus" (change)="onStatusFilterChange()" class="status-filter" [title]="getSelectedFilterTitle() || ''">
+          <option *ngFor="let s of filters" [value]="s.value" [title]="s.title || ''">{{ s.label }}</option>
         </select>
       </div>
     </div>
@@ -71,7 +71,7 @@
             <td>
               <select class="inline-status-select" [ngClass]="getStatusClass(order.status)"
                       [ngModel]="order.status" (ngModelChange)="updateStatus(order, $event)">
-                <option *ngFor="let s of statuses.slice(1)" [value]="s.value">{{ s.label }}</option>
+                <option *ngFor="let s of statuses" [value]="s.value">{{ s.label }}</option>
               </select>
             </td>
             <td>{{ order.createdAt | date:'MMM d, y' }}</td>

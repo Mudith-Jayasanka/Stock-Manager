@@ -63,9 +63,11 @@ async function enrichOrder(orderRow: any) {
 // ─── List Orders ──────────────────────────────────────────────────────────────
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const { status } = req.query as { status?: OrderStatus };
+    const { status } = req.query as { status?: OrderStatus | 'ongoing' };
     let result;
-    if (status) {
+    if (status === 'ongoing') {
+      result = await query("SELECT * FROM orders WHERE status <> 'cancelled' ORDER BY created_at DESC");
+    } else if (status) {
       result = await query('SELECT * FROM orders WHERE status = $1 ORDER BY created_at DESC', [status]);
     } else {
       result = await query('SELECT * FROM orders ORDER BY created_at DESC');
@@ -135,7 +137,8 @@ router.post('/', async (req: Request, res: Response) => {
       }
     }
 
-    const orderId = `ord-${uuidv4()}`;
+    const orderSeq = await query("SELECT nextval('order_id_seq') AS next_id");
+    const orderId = `ord-${orderSeq.rows[0].next_id}`;
     const orderResult = await query(
       'INSERT INTO orders (id, customer_id, status) VALUES ($1, $2, $3) RETURNING *',
       [orderId, customerId, 'pending']

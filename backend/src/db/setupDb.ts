@@ -35,6 +35,7 @@ async function setupDb() {
       - 2025-01-01: Initial schema creation (Master Data, Products, Customers, Orders).
       - 2026-04-30: Added 'cancel_reason' column to 'orders' table.
       - 2026-04-30: Refactored setupDb.ts to be data-safe (removed DROP/Seed logic).
+      - 2026-05-02: Added order_id_seq for human-readable sequential order IDs.
     */
 
     // ─── Create Tables (Safe execution) ───────────────────────────────────────
@@ -102,6 +103,8 @@ async function setupDb() {
         elements JSONB NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+
+      CREATE SEQUENCE IF NOT EXISTS order_id_seq START 1;
     `);
     
     console.log('Database schema verified (no tables dropped, no data deleted)');

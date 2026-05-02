@@ -14,6 +14,13 @@ The main view for managing all customer orders.
 ## 2. Order Creation Page
 A dedicated page for manually inputting a new customer order.
 
+### Order Identifier
+- Order IDs must be human-readable and sequential.
+- New orders use the format `ord-1`, `ord-2`, `ord-3`, and so on.
+- The backend must generate order IDs using the database-managed `order_id_seq` sequence when creating an order.
+- The frontend must not calculate or assign the next order ID.
+- The database remains responsible for uniqueness so two simultaneous order creations cannot receive the same order ID.
+
 ### Customer Details
 The system must collect the following information: Full Name, Email Address, Phone Number, and Shipping Address.
 
