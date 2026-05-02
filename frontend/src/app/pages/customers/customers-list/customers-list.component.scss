@@ -32,6 +32,109 @@
 .customer-name { display: block; font-weight: 600; color: var(--text-primary); }
 .address-cell { color: var(--text-secondary); max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+
+  &:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--accent);
+  }
+
+  &.danger:hover {
+    color: var(--danger);
+    border-color: rgba(240,83,101,0.4);
+    background: rgba(240,83,101,0.12);
+  }
+
+  .material-icons { font-size: 16px; }
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 500px;
+  box-shadow: var(--shadow);
+}
+
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h3 { margin: 0; }
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+
+  &:hover { color: var(--text-primary); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.modal-body {
+  padding: 20px;
+
+  p {
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+}
+
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.error-message {
+  color: var(--danger) !important;
+  background: rgba(240,83,101,0.12);
+  border: 1px solid rgba(240,83,101,0.25);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-bottom: 16px;
+}
+
 /* Pagination */
 .pagination {
   display: flex;

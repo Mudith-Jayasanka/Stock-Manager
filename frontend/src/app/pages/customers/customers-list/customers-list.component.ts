@@ -17,6 +17,18 @@ export class CustomersListComponent implements OnInit {
   
   searchQuery = '';
   loading = true;
+  saving = false;
+  errorMessage = '';
+
+  showEditModal = false;
+  showDeleteModal = false;
+  selectedCustomer: Customer | null = null;
+  editForm = {
+    fullName: '',
+    phone: '',
+    email: '',
+    address: ''
+  };
 
   // Pagination
   currentPage = 1;
@@ -80,5 +92,83 @@ export class CustomersListComponent implements OnInit {
 
   prevPage() {
     if (this.currentPage > 1) this.currentPage--;
+  }
+
+  openEdit(customer: Customer) {
+    this.selectedCustomer = customer;
+    this.editForm = {
+      fullName: customer.fullName,
+      phone: customer.phone,
+      email: customer.email || '',
+      address: customer.address || ''
+    };
+    this.errorMessage = '';
+    this.showEditModal = true;
+  }
+
+  closeEdit() {
+    if (this.saving) return;
+    this.showEditModal = false;
+    this.selectedCustomer = null;
+    this.errorMessage = '';
+  }
+
+  saveCustomer() {
+    if (!this.selectedCustomer || !this.editForm.fullName.trim() || !this.editForm.phone.trim()) return;
+
+    this.saving = true;
+    this.errorMessage = '';
+    this.customersService.updateCustomer(this.selectedCustomer.id, {
+      fullName: this.editForm.fullName.trim(),
+      phone: this.editForm.phone.trim(),
+      email: this.editForm.email.trim(),
+      address: this.editForm.address.trim()
+    }).subscribe({
+      next: (updated) => {
+        const idx = this.customers.findIndex(c => c.id === updated.id);
+        if (idx !== -1) this.customers[idx] = updated;
+        this.applySearch();
+        this.saving = false;
+        this.closeEdit();
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.error || 'Could not update customer.';
+        this.saving = false;
+      }
+    });
+  }
+
+  openDelete(customer: Customer) {
+    this.selectedCustomer = customer;
+    this.errorMessage = '';
+    this.showDeleteModal = true;
+  }
+
+  closeDelete() {
+    if (this.saving) return;
+    this.showDeleteModal = false;
+    this.selectedCustomer = null;
+    this.errorMessage = '';
+  }
+
+  confirmDelete() {
+    if (!this.selectedCustomer) return;
+
+    this.saving = true;
+    this.errorMessage = '';
+    const customerId = this.selectedCustomer.id;
+    this.customersService.deleteCustomer(customerId).subscribe({
+      next: () => {
+        this.customers = this.customers.filter(c => c.id !== customerId);
+        this.applySearch();
+        if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
+        this.saving = false;
+        this.closeDelete();
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.error || 'Could not delete customer.';
+        this.saving = false;
+      }
+    });
   }
 }

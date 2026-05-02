@@ -21,4 +21,12 @@ export class CustomersService {
   getCustomer(id: string): Observable<Customer> {
     return this.http.get<Customer>(`${this.base}/${id}`);
   }
+
+  updateCustomer(id: string, payload: Omit<Customer, 'id' | 'createdAt'>): Observable<Customer> {
+    return this.http.put<Customer>(`${this.base}/${id}`, payload);
+  }
+
+  deleteCustomer(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`);
+  }
 }

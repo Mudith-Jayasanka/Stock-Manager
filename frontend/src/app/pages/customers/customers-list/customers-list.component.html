@@ -30,6 +30,7 @@
         <th>Email</th>
         <th>Address</th>
         <th>Joined</th>
+        <th style="width: 96px;">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -41,6 +42,16 @@
         <td>{{ c.email || 'N/A' }}</td>
         <td class="address-cell">{{ c.address }}</td>
         <td>{{ c.createdAt | date:'MMM d, y' }}</td>
+        <td>
+          <div class="row-actions">
+            <button class="icon-btn" title="Edit customer" (click)="openEdit(c)">
+              <span class="material-icons">edit</span>
+            </button>
+            <button class="icon-btn danger" title="Delete customer" (click)="openDelete(c)">
+              <span class="material-icons">delete</span>
+            </button>
+          </div>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -58,6 +69,69 @@
       <button class="btn btn-ghost" [disabled]="currentPage === totalPages" (click)="nextPage()">
         Next <span class="material-icons">chevron_right</span>
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Customer Modal -->
+<div class="modal-overlay" *ngIf="showEditModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Edit Customer</h3>
+      <button class="close-btn" (click)="closeEdit()" [disabled]="saving">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" [(ngModel)]="editForm.fullName">
+      </div>
+
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="text" [(ngModel)]="editForm.phone">
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="editForm.email">
+      </div>
+
+      <div class="form-group">
+        <label>Address</label>
+        <textarea rows="3" [(ngModel)]="editForm.address"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" (click)="closeEdit()" [disabled]="saving">Cancel</button>
+      <button class="btn btn-primary" (click)="saveCustomer()" [disabled]="saving || !editForm.fullName.trim() || !editForm.phone.trim()">
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Customer Modal -->
+<div class="modal-overlay" *ngIf="showDeleteModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Delete Customer</h3>
+      <button class="close-btn" (click)="closeDelete()" [disabled]="saving">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+      <p>
+        Delete <strong>{{ selectedCustomer?.fullName }}</strong>? This hides the customer from customer lists while preserving historical order records and an audit trail.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" (click)="closeDelete()" [disabled]="saving">Cancel</button>
+      <button class="btn btn-danger" (click)="confirmDelete()" [disabled]="saving">Delete</button>
     </div>
   </div>
 </div>

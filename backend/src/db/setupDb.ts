@@ -36,6 +36,7 @@ async function setupDb() {
       - 2026-04-30: Added 'cancel_reason' column to 'orders' table.
       - 2026-04-30: Refactored setupDb.ts to be data-safe (removed DROP/Seed logic).
       - 2026-05-02: Added order_id_seq for human-readable sequential order IDs.
+      - 2026-05-02: Added customer soft-delete fields and customer_audit_log.
     */
 
     // ─── Create Tables (Safe execution) ───────────────────────────────────────
@@ -105,6 +106,23 @@ async function setupDb() {
       );
 
       CREATE SEQUENCE IF NOT EXISTS order_id_seq START 1;
+
+      ALTER TABLE customers ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT false;
+      ALTER TABLE customers ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP;
+
+      ALTER TABLE customers DROP CONSTRAINT IF EXISTS customers_phone_key;
+      CREATE UNIQUE INDEX IF NOT EXISTS customers_active_phone_unique
+        ON customers (phone)
+        WHERE is_deleted = false;
+
+      CREATE TABLE IF NOT EXISTS customer_audit_log (
+        id VARCHAR PRIMARY KEY,
+        customer_id VARCHAR NOT NULL REFERENCES customers(id),
+        action VARCHAR NOT NULL,
+        before_data JSONB NOT NULL,
+        after_data JSONB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `);
     
     console.log('Database schema verified (no tables dropped, no data deleted)');
