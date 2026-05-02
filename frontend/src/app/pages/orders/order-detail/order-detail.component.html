@@ -58,6 +58,7 @@
             <th>Qty</th>
             <th>Unit Price</th>
             <th style="text-align: right">Total</th>
+            <th style="width: 56px;"></th>
           </tr>
         </thead>
         <tbody>
@@ -71,6 +72,19 @@
             <td>Rs. {{ (item.product?.price || 0) | number }}</td>
             <td style="text-align: right; font-weight: 600;">
               Rs. {{ ((item.product?.price || 0) * item.quantity) | number }}
+            </td>
+            <td>
+              <div class="row-print">
+                <button class="icon-btn" title="Print one replacement label" (click)="toggleRowPrintMenu(item)">
+                  <span class="material-icons">print</span>
+                </button>
+                <div class="template-dropdown" *ngIf="openPrintMenuFor === item.productId">
+                  <button class="template-option" *ngFor="let tmpl of templates" (click)="printItemTemplate(item, tmpl.id)">
+                    {{ tmpl.name }}
+                  </button>
+                  <div class="template-empty" *ngIf="templates.length === 0">No templates</div>
+                </div>
+              </div>
             </td>
           </tr>
         </tbody>

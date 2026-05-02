@@ -2,7 +2,12 @@ import { Injectable } from '@angular/core';
 import * as fabric from 'fabric';
 // @ts-ignore
 import bwipjs from 'bwip-js';
-import { Order, LabelTemplate, CanvasElement } from '../models';
+import { Order, OrderItem, LabelTemplate, CanvasElement } from '../models';
+
+export interface LabelPrintJob {
+  order: Order;
+  item?: OrderItem;
+}
 
 @Injectable({ providedIn: 'root' })
 export class PrintService {
@@ -11,18 +16,22 @@ export class PrintService {
   constructor() {}
 
   async printLabels(orders: Order[], template: LabelTemplate) {
+    const jobs = orders.map(order => ({ order }));
+    await this.printLabelJobs(jobs, template);
+  }
+
+  async printLabelJobs(jobs: LabelPrintJob[], template: LabelTemplate) {
     const images: string[] = [];
 
-    // For each order, generate the label image
-    for (const order of orders) {
-      const dataUri = await this.generateLabelImage(order, template);
+    for (const job of jobs) {
+      const dataUri = await this.generateLabelImage(job, template);
       images.push(dataUri);
     }
 
     this.triggerPrint(images, template.widthMm, template.heightMm);
   }
 
-  private async generateLabelImage(order: Order, template: LabelTemplate): Promise<string> {
+  private async generateLabelImage(job: LabelPrintJob, template: LabelTemplate): Promise<string> {
     return new Promise((resolve) => {
       // Create off-screen canvas
       const canvasEl = document.createElement('canvas');
@@ -57,7 +66,7 @@ export class PrintService {
             let textStr = config.text || '';
             
             if (config.customType === 'variable' && config.mappedField) {
-                const value = this.resolveVariable(config.mappedField, order) || '';
+                const value = this.resolveVariable(config.mappedField, job) || '';
                 // If the user modified the text to include a placeholder, replace it cleanly
                 if (textStr.includes('{{')) {
                     textStr = textStr.replace(/\{\{\s*.*?\s*\}\}/g, value);
@@ -68,7 +77,7 @@ export class PrintService {
             } else {
                 // Standard text block inline interpolation: "Hello {{ order.customer.fullName }}"
                 textStr = textStr.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (match: string, field: string) => {
-                    return this.resolveVariable(field, order) || '';
+                    return this.resolveVariable(field, job) || '';
                 });
             }
 
@@ -79,7 +88,7 @@ export class PrintService {
         // Barcode / QR Variables
         if (el.type === 'variable-barcode' || el.type === 'variable-qr') {
             const mappedField = el.mappedField;
-            const value = mappedField ? this.resolveVariable(mappedField, order) : '123456';
+            const value = mappedField ? this.resolveVariable(mappedField, job) : '123456';
             
             const tempCanvas = document.createElement('canvas');
             try {
@@ -125,16 +134,16 @@ export class PrintService {
     });
   }
 
-  private resolveVariable(field: string, order: Order): string {
+  private resolveVariable(field: string, job: LabelPrintJob): string {
+    const { order, item } = job;
     // Basic dot notation resolver (e.g. "order.customer.fullName")
     const parts = field.split('.');
     let current: any = { order };
     
-    // For product-related variables in an order context, 
-    // we might just take the first item's product for now, or sum them.
-    // E.g. "product.name" -> order.items[0].product.name
     if (parts[0] === 'product') {
-        if (order.items && order.items.length > 0) {
+        if (item?.product) {
+            current = { product: item.product };
+        } else if (order.items && order.items.length > 0) {
             current = { product: order.items[0].product };
         } else {
             return '';

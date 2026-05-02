@@ -53,12 +53,17 @@ Users can print labels directly from inside a specific order, or in bulk from th
 
 ### Individual Printing (Inside Order View)
 - A section within the Order details displays a list of all available label templates.
-- Clicking the "Print" button next to a template triggers the label generation flow for that specific order.
+- Clicking the "Print" button next to a template triggers label generation for every ordered unit in that order. For example, an order with one product at quantity 2 and another product at quantity 1 prints three labels using the selected template.
+- Product variables in generated labels must resolve against the specific product being printed, while order and customer variables resolve against the containing order.
+- Each row in the order items table includes a print action for replacement/recovery printing. Clicking the row print action opens a compact template dropdown for that row.
+- Selecting a template from a row-level print dropdown prints exactly one label for that row's product, regardless of the row quantity.
+- If more than five label templates exist, the row-level template dropdown must constrain its height and scroll.
 
 ### Batch Printing (From Orders Dashboard)
 - A "Label Printing" panel is permanently visible on the main Orders Dashboard, listing all available templates.
 - **Lock State:** The "Print" buttons on these templates remain disabled/locked until the user selects at least one order from the list.
-- **Batch Generation:** When multiple orders are selected, clicking "Print" sends the array of selected orders to the generator. The system generates a continuous, multi-page document containing the requested labels for *all* selected orders at once.
+- **Batch Generation:** When one or more orders are selected, clicking "Print" prints one label per ordered unit across all selected orders. For example, two selected orders with quantities 2 and 3 generate five labels using the selected template.
+- Product variables in batch-generated labels must resolve against the specific product unit being printed, while order and customer variables resolve against that product unit's containing order.
 
 ### Core Printing Mechanics
 - **Data Injection:** The system automatically injects Order and Product data into the template's globally mapped variables.

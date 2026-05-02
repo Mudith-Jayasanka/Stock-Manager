@@ -4,7 +4,7 @@ import { RouterLink, ActivatedRoute } from '@angular/router';
 import { OrdersService } from '../../../services/orders.service';
 import { LabelTemplatesService } from '../../../services/label-templates.service';
 import { PrintService } from '../../../services/print.service';
-import { Order, LabelTemplate } from '../../../models';
+import { Order, OrderItem, LabelTemplate } from '../../../models';
 
 @Component({
   selector: 'app-order-detail',
@@ -18,6 +18,7 @@ export class OrderDetailComponent implements OnInit {
   templates: LabelTemplate[] = [];
   loading = true;
   error = '';
+  openPrintMenuFor: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -63,7 +64,22 @@ export class OrderDetailComponent implements OnInit {
   printTemplate(templateId: string) {
     const template = this.templates.find(t => t.id === templateId);
     if (!template || !this.order) return;
-    
-    this.printService.printLabels([this.order], template);
+
+    const jobs = this.order.items.flatMap(item =>
+      Array.from({ length: item.quantity }, () => ({ order: this.order!, item }))
+    );
+    this.printService.printLabelJobs(jobs, template);
+  }
+
+  toggleRowPrintMenu(item: OrderItem) {
+    this.openPrintMenuFor = this.openPrintMenuFor === item.productId ? null : item.productId;
+  }
+
+  printItemTemplate(item: OrderItem, templateId: string) {
+    const template = this.templates.find(t => t.id === templateId);
+    if (!template || !this.order) return;
+
+    this.openPrintMenuFor = null;
+    this.printService.printLabelJobs([{ order: this.order, item }], template);
   }
 }

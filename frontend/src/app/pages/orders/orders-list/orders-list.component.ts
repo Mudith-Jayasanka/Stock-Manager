@@ -127,7 +127,12 @@ export class OrdersListComponent implements OnInit {
     const template = this.templates.find(t => t.id === templateId);
     if (!template) return;
     const selectedOrders = this.orders.filter(o => this.selectedOrderIds.has(o.id));
-    this.printService.printLabels(selectedOrders, template);
+    const jobs = selectedOrders.flatMap(order =>
+      order.items.flatMap(item =>
+        Array.from({ length: item.quantity }, () => ({ order, item }))
+      )
+    );
+    this.printService.printLabelJobs(jobs, template);
   }
 
   getStatusClass(status: string): string { return status; }
