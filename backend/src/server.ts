@@ -5,6 +5,7 @@ import productsRouter from './routes/products';
 import customersRouter from './routes/customers';
 import ordersRouter from './routes/orders';
 import labelTemplatesRouter from './routes/labelTemplates';
+import { databaseMode } from './config/database';
 
 const app = express();
 const PORT = 3000;
@@ -22,7 +23,7 @@ app.use('/api/label-templates', labelTemplatesRouter);
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', databaseMode, timestamp: new Date().toISOString() });
 });
 
 // ─── 404 Handler ─────────────────────────────────────────────────────────────

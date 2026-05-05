@@ -1,5 +1,12 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+
+interface HealthResponse {
+  status: string;
+  databaseMode: 'production' | 'development';
+  timestamp: string;
+}
 
 @Component({
   selector: 'app-root',
@@ -68,7 +75,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
         <div class="sidebar-footer">
           <span class="material-icons">circle</span>
-          <span>DB Active</span>
+          <span>{{ databaseLabel }}</span>
         </div>
       </nav>
 
@@ -311,5 +318,21 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 export class App {
   title = 'Label Print';
   sidebarOpen = false;
+  databaseLabel = 'DB Checking';
+
+  constructor(private http: HttpClient) {
+    this.loadDatabaseMode();
+  }
+
+  private loadDatabaseMode() {
+    this.http.get<HealthResponse>('http://localhost:3000/api/health').subscribe({
+      next: (health) => {
+        this.databaseLabel = health.databaseMode === 'development' ? 'Dev DB' : 'Prod DB';
+      },
+      error: () => {
+        this.databaseLabel = 'DB Offline';
+      }
+    });
+  }
 }
 

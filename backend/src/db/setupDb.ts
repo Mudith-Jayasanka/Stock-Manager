@@ -1,6 +1,5 @@
 import { Client } from 'pg';
-
-const connectionString = 'postgresql://neondb_owner:npg_hIguoSkMAc16@ep-fragrant-dawn-aoe2l8ts.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require';
+import { connectionString, databaseMode } from '../config/database';
 
 /**
  * DATABASE SETUP & SCHEMA MANAGEMENT
@@ -25,6 +24,7 @@ async function setupDb() {
   try {
     await client.connect();
     console.log('Connected to database');
+    console.log(`Database mode: ${databaseMode}`);
 
     // ─── Schema Revision History ──────────────────────────────────────────────
     /*

@@ -5,8 +5,13 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src/server.ts",
+    "dev:prod": "set DB_MODE=production&& ts-node src/server.ts",
+    "dev:devdb": "set DB_MODE=development&& ts-node src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "setup-db": "ts-node src/db/setupDb.ts",
+    "setup-db:prod": "set DB_MODE=production&& ts-node src/db/setupDb.ts",
+    "setup-db:dev": "set DB_MODE=development&& ts-node src/db/setupDb.ts"
   },
   "keywords": [],
   "author": "",

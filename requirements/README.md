@@ -23,6 +23,9 @@ Customer records can be viewed, searched, edited, and deleted from the Customers
 ## Database Schema Updates
 The project uses `backend/src/db/setupDb.ts` as the central schema-management entry point. Any database table, column, index, constraint, or sequence change must be added there first, including an entry in its schema revision history. Apply schema changes by running the setup script directly; do not use one-off SQL scripts unless the user explicitly asks for an emergency/manual database operation.
 
+## Environment Indicator
+The backend health endpoint must expose the active database mode. The frontend sidebar must display whether the app is connected to the production database or development database so users can clearly identify the active environment.
+
 ## Flows
 - **[label_editor_flow.puml](./label_editor_flow.puml):** Flow for designing labels.
 - **[label_generation_flow.puml](./label_generation_flow.puml):** Flow for dynamically generating labels using variables.
