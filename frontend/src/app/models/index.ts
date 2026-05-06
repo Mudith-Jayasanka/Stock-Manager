@@ -15,11 +15,25 @@ export interface Fragrance {
   usageCount?: number;
 }
 
+export interface WaxType {
+  id: string;
+  name: string;
+  isActive: boolean;
+  createdAt: string;
+  usageCount?: number;
+}
+
 // ─── Products ─────────────────────────────────────────────────────────────────
 export interface FragranceComposition {
   fragranceId: string;
   percentage: number;
   fragranceName?: string;
+}
+
+export interface WaxComposition {
+  waxTypeId: string;
+  percentage: number;
+  waxTypeName?: string;
 }
 
 export interface Product {
@@ -31,7 +45,9 @@ export interface Product {
   weightGrams: number;
   containerTypeId: string;
   containerTypeName?: string;
+  fragranceLoad: number;
   fragrances: FragranceComposition[];
+  waxes: WaxComposition[];
   createdAt: string;
 }
 

@@ -1,14 +1,19 @@
 <div class="page-header">
   <div class="page-title">
-    <h1>Create Product</h1>
-    <p>Add a new candle to your catalog</p>
+    <h1>{{ isEdit ? 'Edit Product' : 'Create Product' }}</h1>
+    <p>{{ isEdit ? 'Adjust your candle details' : 'Add a new candle to your catalog' }}</p>
   </div>
   <a routerLink="/products" class="btn btn-ghost">
     <span class="material-icons">arrow_back</span> Back
   </a>
 </div>
 
-<form class="create-form" (ngSubmit)="save()">
+<div *ngIf="loading" class="card empty-state">
+  <span class="material-icons">hourglass_empty</span>
+  <p>Loading product data…</p>
+</div>
+
+<form *ngIf="!loading" class="create-form" (ngSubmit)="save()">
   <div class="form-layout">
 
     <!-- ─── Left Column ─────────────────────────────────────────────── -->
@@ -42,16 +47,94 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label>Weight (grams) *</label>
+            <label>Total Weight (grams) *</label>
             <input type="number" [(ngModel)]="weightGrams" name="weightGrams" placeholder="240" min="0">
           </div>
           <div class="form-group">
-            <label>Container Type *</label>
-            <select [(ngModel)]="selectedContainerTypeId" name="containerTypeId">
-              <option value="">Select container…</option>
-              <option *ngFor="let c of containerTypes" [value]="c.id">{{ c.name }}</option>
-            </select>
+            <label>Fragrance Load (%) *</label>
+            <input type="number" [(ngModel)]="fragranceLoad" name="fragranceLoad" placeholder="10" min="0" step="0.1">
           </div>
+        </div>
+
+        <div class="form-group">
+          <label>Container Type *</label>
+          <select [(ngModel)]="selectedContainerTypeId" name="containerTypeId">
+            <option value="">Select container…</option>
+            <option *ngFor="let c of containerTypes" [value]="c.id">{{ c.name }}</option>
+          </select>
+        </div>
+
+        <!-- Calculated Components -->
+        <div class="calculations-panel" *ngIf="weightGrams">
+          <div class="calc-group">
+            <div class="calc-row total">
+              <span>Total Wax Weight:</span>
+              <strong>{{ waxWeight | number:'1.1-1' }}g</strong>
+            </div>
+            <!-- Individual Wax Breakdown -->
+            <div class="calc-sub-group" *ngIf="waxComposition.length > 0">
+              <div class="calc-row sub" *ngFor="let w of waxComposition">
+                <span>↳ {{ w.name || 'Unknown Wax' }} ({{ w.percentage }}%)</span>
+                <span>{{ (waxWeight * w.percentage / 100) | number:'1.1-1' }}g</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-group" style="margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 12px;">
+            <div class="calc-row total">
+              <span>Total Fragrance Weight:</span>
+              <strong>{{ fragranceWeight | number:'1.1-1' }}g</strong>
+            </div>
+            <!-- Individual Fragrance Breakdown -->
+            <div class="calc-sub-group" *ngIf="fragranceComposition.length > 0">
+              <div class="calc-row sub" *ngFor="let f of fragranceComposition">
+                <span>↳ {{ f.name || 'Unknown Fragrance' }} ({{ f.percentage }}%)</span>
+                <span>{{ (fragranceWeight * f.percentage / 100) | number:'1.1-1' }}g</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── Wax Composition ────────────────────────────────────────────── -->
+      <div class="card form-card" style="margin-top: 24px;">
+        <div class="section-header">
+          <h2>Wax Composition</h2>
+          <div class="percentage-indicator" [class.valid]="waxPercentageValid" [class.invalid]="waxComposition.length > 0 && !waxPercentageValid">
+            <span class="material-icons">{{ waxPercentageValid ? 'check_circle' : 'error_outline' }}</span>
+            {{ totalWaxPercentage | number:'1.0-1' }}%
+          </div>
+        </div>
+
+        <div class="item-picker">
+          <select [(ngModel)]="selectedWaxId" name="waxPicker">
+            <option value="">Select wax to add…</option>
+            <option *ngFor="let w of unusedWaxes" [value]="w.id">{{ w.name }}</option>
+          </select>
+          <button type="button" class="btn btn-primary" (click)='addWax()' [disabled]="!selectedWaxId">
+            <span class="material-icons">add</span> Add
+          </button>
+        </div>
+
+        <div class="composition-list" *ngIf="waxComposition.length > 0">
+          <div class="composition-item" *ngFor="let w of waxComposition; let i = index">
+            <div class="item-info">
+              <span class="material-icons">science</span>
+              <span class="item-name">{{ w.name }}</span>
+            </div>
+            <div class="item-controls">
+              <div class="percentage-input">
+                <input type="number" [(ngModel)]="w.percentage" [name]="'wax_pct_' + i" min="0" max="100">
+                <span>%</span>
+              </div>
+              <button type="button" class="btn btn-danger" (click)="removeWax(i)">
+                <span class="material-icons">close</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="waxComposition.length === 0" class="empty-state">
+          <p>Add at least one wax type</p>
         </div>
       </div>
     </div>
@@ -59,16 +142,16 @@
     <!-- ─── Right Column ────────────────────────────────────────────── -->
     <div class="form-right">
       <div class="card form-card">
-        <div class="fragrance-header">
+        <div class="section-header">
           <h2>Fragrance Composition</h2>
-          <div class="percentage-indicator" [class.valid]="percentageValid" [class.invalid]="fragranceComposition.length > 0 && !percentageValid">
-            <span class="material-icons">{{ percentageValid ? 'check_circle' : 'error_outline' }}</span>
-            {{ totalPercentage | number:'1.0-1' }}%
+          <div class="percentage-indicator" [class.valid]="fragrancePercentageValid" [class.invalid]="fragranceComposition.length > 0 && !fragrancePercentageValid">
+            <span class="material-icons">{{ fragrancePercentageValid ? 'check_circle' : 'error_outline' }}</span>
+            {{ totalFragrancePercentage | number:'1.0-1' }}%
           </div>
         </div>
 
         <!-- Fragrance Picker -->
-        <div class="fragrance-picker">
+        <div class="item-picker">
           <select [(ngModel)]="selectedFragranceId" name="fragrancePicker">
             <option value="">Select fragrance to add…</option>
             <option *ngFor="let f of unusedFragrances" [value]="f.id">{{ f.name }}</option>
@@ -81,35 +164,22 @@
         <!-- Composition List -->
         <div class="composition-list" *ngIf="fragranceComposition.length > 0">
           <div class="composition-item" *ngFor="let f of fragranceComposition; let i = index">
-            <div class="frag-info">
+            <div class="item-info">
               <span class="material-icons">local_florist</span>
-              <span class="frag-name">{{ f.name }}</span>
+              <span class="item-name">{{ f.name }}</span>
             </div>
-            <div class="frag-controls">
+            <div class="item-controls">
               <div class="percentage-input">
-                <input type="number" [(ngModel)]="f.percentage" [name]="'pct_' + i"
-                  min="0" max="100" placeholder="0">
+                <input type="number" [(ngModel)]="f.percentage" [name]="'frag_pct_' + i" min="0" max="100">
                 <span>%</span>
               </div>
-              <button type="button" class="btn btn-danger" style="padding: 5px 8px;" (click)="removeFragrance(i)">
-                <span class="material-icons" style="font-size:14px">close</span>
+              <button type="button" class="btn btn-danger" (click)="removeFragrance(i)">
+                <span class="material-icons">close</span>
               </button>
             </div>
           </div>
-
-          <!-- Percentage bar -->
-          <div class="percentage-bar">
-            <div class="percentage-fill" [style.width.%]="Math.min(totalPercentage, 100)"
-              [class.valid]="percentageValid" [class.over]="totalPercentage > 100">
-            </div>
-          </div>
-          <p class="pct-hint" *ngIf="!percentageValid && fragranceComposition.length > 0">
-            Total must equal 100%. Currently {{ totalPercentage | number:'1.0-1' }}%
-          </p>
         </div>
-
-        <div *ngIf="fragranceComposition.length === 0" class="empty-state" style="padding: 32px;">
-          <span class="material-icons">local_florist</span>
+        <div *ngIf="fragranceComposition.length === 0" class="empty-state">
           <p>Add at least one fragrance</p>
         </div>
       </div>
@@ -122,7 +192,7 @@
     <a routerLink="/products" class="btn btn-ghost">Cancel</a>
     <button type="submit" class="btn btn-primary" [disabled]="!isFormValid || saving">
       <span class="material-icons">{{ saving ? 'hourglass_empty' : 'save' }}</span>
-      {{ saving ? 'Saving…' : 'Create Product' }}
+      {{ saving ? 'Saving…' : (isEdit ? 'Update Product' : 'Create Product') }}
     </button>
   </div>
 </form>

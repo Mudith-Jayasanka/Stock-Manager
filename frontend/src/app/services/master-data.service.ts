@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ContainerType, Fragrance } from '../models';
+import { ContainerType, Fragrance, WaxType } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class MasterDataService {
@@ -33,5 +33,18 @@ export class MasterDataService {
 
   deleteFragrance(id: string): Observable<{ message: string; archived: boolean }> {
     return this.http.delete<{ message: string; archived: boolean }>(`${this.base}/fragrances/${id}`);
+  }
+
+  // ── Wax Types ───────────────────────────────────────────────────────────────
+  getWaxTypes(): Observable<WaxType[]> {
+    return this.http.get<WaxType[]>(`${this.base}/wax-types`);
+  }
+
+  addWaxType(name: string): Observable<WaxType> {
+    return this.http.post<WaxType>(`${this.base}/wax-types`, { name });
+  }
+
+  deleteWaxType(id: string): Observable<{ message: string; archived: boolean }> {
+    return this.http.delete<{ message: string; archived: boolean }>(`${this.base}/wax-types/${id}`);
   }
 }

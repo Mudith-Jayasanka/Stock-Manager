@@ -37,6 +37,7 @@ async function setupDb() {
       - 2026-04-30: Refactored setupDb.ts to be data-safe (removed DROP/Seed logic).
       - 2026-05-02: Added order_id_seq for human-readable sequential order IDs.
       - 2026-05-02: Added customer soft-delete fields and customer_audit_log.
+      - 2026-05-06: Added wax_types, product_waxes, and fragrance_load to products.
     */
 
     // ─── Create Tables (Safe execution) ───────────────────────────────────────
@@ -55,6 +56,13 @@ async function setupDb() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
+      CREATE TABLE IF NOT EXISTS wax_types (
+        id VARCHAR PRIMARY KEY,
+        name VARCHAR NOT NULL,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
       CREATE TABLE IF NOT EXISTS products (
         id VARCHAR PRIMARY KEY,
         name VARCHAR NOT NULL,
@@ -62,14 +70,22 @@ async function setupDb() {
         cost INTEGER NOT NULL,
         weight_grams INTEGER NOT NULL,
         container_type_id VARCHAR REFERENCES container_types(id),
+        fragrance_load NUMERIC DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
       CREATE TABLE IF NOT EXISTS product_fragrances (
         product_id VARCHAR REFERENCES products(id),
         fragrance_id VARCHAR REFERENCES fragrances(id),
-        percentage INTEGER NOT NULL,
+        percentage NUMERIC NOT NULL,
         PRIMARY KEY (product_id, fragrance_id)
+      );
+
+      CREATE TABLE IF NOT EXISTS product_waxes (
+        product_id VARCHAR REFERENCES products(id),
+        wax_type_id VARCHAR REFERENCES wax_types(id),
+        percentage NUMERIC NOT NULL,
+        PRIMARY KEY (product_id, wax_type_id)
       );
 
       CREATE TABLE IF NOT EXISTS customers (
@@ -114,6 +130,9 @@ async function setupDb() {
       CREATE UNIQUE INDEX IF NOT EXISTS customers_active_phone_unique
         ON customers (phone)
         WHERE is_deleted = false;
+
+      ALTER TABLE products ADD COLUMN IF NOT EXISTS fragrance_load NUMERIC DEFAULT 0;
+      ALTER TABLE product_fragrances ALTER COLUMN percentage TYPE NUMERIC;
 
       CREATE TABLE IF NOT EXISTS customer_audit_log (
         id VARCHAR PRIMARY KEY,

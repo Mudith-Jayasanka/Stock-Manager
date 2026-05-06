@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { query } from '../db';
 import { ContainerType, Fragrance } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -24,6 +25,7 @@ router.get('/container-types', async (_req: Request, res: Response) => {
     }));
     res.json(mapped);
   } catch (err) {
+    logger.error('GET /api/master-data/container-types failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -48,6 +50,7 @@ router.post('/container-types', async (req: Request, res: Response) => {
       createdAt: row.created_at.toISOString()
     });
   } catch (err) {
+    logger.error('POST /api/master-data/container-types failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -71,6 +74,7 @@ router.delete('/container-types/:id', async (req: Request, res: Response) => {
       res.json({ message: 'Item deleted.', archived: false });
     }
   } catch (err) {
+    logger.error('DELETE /api/master-data/container-types/:id failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -94,6 +98,7 @@ router.get('/fragrances', async (_req: Request, res: Response) => {
     }));
     res.json(mapped);
   } catch (err) {
+    logger.error('GET /api/master-data/fragrances failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -118,6 +123,7 @@ router.post('/fragrances', async (req: Request, res: Response) => {
       createdAt: row.created_at.toISOString()
     });
   } catch (err) {
+    logger.error('POST /api/master-data/fragrances failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -140,6 +146,79 @@ router.delete('/fragrances/:id', async (req: Request, res: Response) => {
       res.json({ message: 'Item deleted.', archived: false });
     }
   } catch (err) {
+    logger.error('DELETE /api/master-data/fragrances/:id failed', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+// ─── Wax Types ────────────────────────────────────────────────────────────────
+router.get('/wax-types', async (_req: Request, res: Response) => {
+  try {
+    const result = await query(`
+      SELECT wt.*, COUNT(pw.product_id) as usage_count
+      FROM wax_types wt
+      LEFT JOIN product_waxes pw ON wt.id = pw.wax_type_id
+      GROUP BY wt.id
+      ORDER BY wt.created_at DESC
+    `);
+    const mapped = result.rows.map(row => ({
+      id: row.id,
+      name: row.name,
+      isActive: row.is_active,
+      createdAt: row.created_at.toISOString(),
+      usageCount: parseInt(row.usage_count, 10)
+    }));
+    res.json(mapped);
+  } catch (err) {
+    logger.error('GET /api/master-data/wax-types failed', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+router.post('/wax-types', async (req: Request, res: Response) => {
+  try {
+    const { name } = req.body as { name: string };
+    if (!name || !name.trim()) {
+      res.status(400).json({ error: 'Name is required.' });
+      return;
+    }
+    const newId = `wt-${uuidv4()}`;
+    const result = await query(
+      'INSERT INTO wax_types (id, name) VALUES ($1, $2) RETURNING *',
+      [newId, name.trim()]
+    );
+    const row = result.rows[0];
+    res.status(201).json({
+      id: row.id,
+      name: row.name,
+      isActive: row.is_active,
+      createdAt: row.created_at.toISOString()
+    });
+  } catch (err) {
+    logger.error('POST /api/master-data/wax-types failed', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+router.delete('/wax-types/:id', async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const usageResult = await query('SELECT COUNT(*) as count FROM product_waxes WHERE wax_type_id = $1', [id]);
+    const usageCount = parseInt(usageResult.rows[0].count, 10);
+    
+    if (usageCount > 0) {
+      await query('UPDATE wax_types SET is_active = false WHERE id = $1', [id]);
+      res.json({ message: `Item archived (used in ${usageCount} product(s)).`, archived: true });
+    } else {
+      const deleteResult = await query('DELETE FROM wax_types WHERE id = $1 RETURNING id', [id]);
+      if (deleteResult.rows.length === 0) {
+        res.status(404).json({ error: 'Wax type not found.' });
+        return;
+      }
+      res.json({ message: 'Item deleted.', archived: false });
+    }
+  } catch (err) {
+    logger.error('DELETE /api/master-data/wax-types/:id failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });

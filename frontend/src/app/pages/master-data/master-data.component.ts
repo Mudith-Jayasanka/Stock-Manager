@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MasterDataService } from '../../services/master-data.service';
-import { ContainerType, Fragrance } from '../../models';
+import { ContainerType, Fragrance, WaxType } from '../../models';
 
 @Component({
   selector: 'app-master-data',
@@ -12,13 +12,15 @@ import { ContainerType, Fragrance } from '../../models';
   styleUrl: './master-data.component.scss',
 })
 export class MasterDataComponent implements OnInit {
-  activeTab: 'containers' | 'fragrances' = 'containers';
+  activeTab: 'containers' | 'fragrances' | 'wax' = 'containers';
 
   containerTypes: ContainerType[] = [];
   fragrances: Fragrance[] = [];
+  waxTypes: WaxType[] = [];
 
   newContainerName = '';
   newFragranceName = '';
+  newWaxName = '';
 
   toast: { message: string; type: 'success' | 'error' } | null = null;
 
@@ -27,6 +29,7 @@ export class MasterDataComponent implements OnInit {
   ngOnInit() {
     this.loadContainerTypes();
     this.loadFragrances();
+    this.loadWaxTypes();
   }
 
   loadContainerTypes() {
@@ -35,6 +38,10 @@ export class MasterDataComponent implements OnInit {
 
   loadFragrances() {
     this.masterDataService.getFragrances().subscribe(data => (this.fragrances = data));
+  }
+
+  loadWaxTypes() {
+    this.masterDataService.getWaxTypes().subscribe(data => (this.waxTypes = data));
   }
 
   addContainerType() {
@@ -75,6 +82,28 @@ export class MasterDataComponent implements OnInit {
     this.masterDataService.deleteFragrance(id).subscribe({
       next: (res) => {
         this.loadFragrances();
+        this.showToast(res.archived ? 'Item archived (in use by products).' : 'Item deleted.', 'success');
+      },
+      error: () => this.showToast('Failed to delete.', 'error'),
+    });
+  }
+
+  addWaxType() {
+    if (!this.newWaxName.trim()) return;
+    this.masterDataService.addWaxType(this.newWaxName.trim()).subscribe({
+      next: () => {
+        this.newWaxName = '';
+        this.loadWaxTypes();
+        this.showToast('Wax type added.', 'success');
+      },
+      error: () => this.showToast('Failed to add wax type.', 'error'),
+    });
+  }
+
+  deleteWaxType(id: string) {
+    this.masterDataService.deleteWaxType(id).subscribe({
+      next: (res) => {
+        this.loadWaxTypes();
         this.showToast(res.archived ? 'Item archived (in use by products).' : 'Item deleted.', 'success');
       },
       error: () => this.showToast('Failed to delete.', 'error'),

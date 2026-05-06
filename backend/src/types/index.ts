@@ -13,9 +13,21 @@ export interface Fragrance {
   createdAt: string;
 }
 
+export interface WaxType {
+  id: string;
+  name: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
 // ─── Products ─────────────────────────────────────────────────────────────────
 export interface FragranceComposition {
   fragranceId: string;
+  percentage: number;
+}
+
+export interface WaxComposition {
+  waxTypeId: string;
   percentage: number;
 }
 
@@ -26,7 +38,9 @@ export interface Product {
   cost: number;
   weightGrams: number;
   containerTypeId: string;
+  fragranceLoad: number;
   fragrances: FragranceComposition[];
+  waxes: WaxComposition[];
   createdAt: string;
 }
 

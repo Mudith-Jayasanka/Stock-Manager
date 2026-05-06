@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { query } from '../db';
 import { LabelTemplate } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -19,6 +20,7 @@ router.get('/', async (_req: Request, res: Response) => {
     }));
     res.json(mapped);
   } catch (err) {
+    logger.error('GET /api/label-templates failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -41,6 +43,7 @@ router.get('/:id', async (req: Request, res: Response) => {
       createdAt: row.created_at.toISOString()
     });
   } catch (err) {
+    logger.error('GET /api/label-templates/:id failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -69,6 +72,7 @@ router.post('/', async (req: Request, res: Response) => {
       createdAt: row.created_at.toISOString()
     });
   } catch (err) {
+    logger.error('POST /api/label-templates failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -105,6 +109,7 @@ router.put('/:id', async (req: Request, res: Response) => {
       createdAt: updatedRow.created_at.toISOString()
     });
   } catch (err) {
+    logger.error('PUT /api/label-templates/:id failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -119,6 +124,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
     }
     res.json({ message: 'Template deleted.' });
   } catch (err) {
+    logger.error('DELETE /api/label-templates/:id failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });

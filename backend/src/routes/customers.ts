@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import pool, { query } from '../db';
 import { Customer } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -57,6 +58,7 @@ router.get('/search', async (req: Request, res: Response) => {
     const mapped = result.rows.map(mapCustomer);
     res.json(mapped);
   } catch (err) {
+    logger.error('GET /api/customers/search failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -68,6 +70,7 @@ router.get('/', async (_req: Request, res: Response) => {
     const mapped = result.rows.map(mapCustomer);
     res.json(mapped);
   } catch (err) {
+    logger.error('GET /api/customers failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -82,6 +85,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     }
     res.json(mapCustomer(result.rows[0]));
   } catch (err) {
+    logger.error('GET /api/customers/:id failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -111,6 +115,7 @@ router.post('/', async (req: Request, res: Response) => {
     
     res.status(201).json(mapCustomer(row));
   } catch (err) {
+    logger.error('POST /api/customers failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -168,6 +173,7 @@ router.put('/:id', async (req: Request, res: Response) => {
     res.json(mapCustomer(updatedRow));
   } catch (err) {
     await client.query('ROLLBACK');
+    logger.error('PUT /api/customers/:id failed', err);
     res.status(500).json({ error: 'Database error' });
   } finally {
     client.release();
@@ -209,6 +215,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
     res.status(204).send();
   } catch (err) {
     await client.query('ROLLBACK');
+    logger.error('DELETE /api/customers/:id failed', err);
     res.status(500).json({ error: 'Database error' });
   } finally {
     client.release();

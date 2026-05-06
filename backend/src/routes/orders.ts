@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { query } from '../db';
 import { Order, OrderStatus, Customer } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -76,6 +77,7 @@ router.get('/', async (req: Request, res: Response) => {
     const enriched = await Promise.all(result.rows.map(enrichOrder));
     res.json(enriched);
   } catch (err) {
+    logger.error('GET /api/orders failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -91,6 +93,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     const enriched = await enrichOrder(result.rows[0]);
     res.json(enriched);
   } catch (err) {
+    logger.error('GET /api/orders/:id failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -154,6 +157,7 @@ router.post('/', async (req: Request, res: Response) => {
     const enriched = await enrichOrder(orderResult.rows[0]);
     res.status(201).json(enriched);
   } catch (err) {
+    logger.error('POST /api/orders failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -181,6 +185,7 @@ router.patch('/:id/status', async (req: Request, res: Response) => {
     const enriched = await enrichOrder(result.rows[0]);
     res.json(enriched);
   } catch (err) {
+    logger.error('PATCH /api/orders/:id/status failed', err);
     res.status(500).json({ error: 'Database error' });
   }
 });

@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { query } from '../db';
 import { Product } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -16,8 +17,24 @@ async function fetchFragrances(productId: string) {
   
   return res.rows.map(r => ({
     fragranceId: r.fragrance_id,
-    percentage: r.percentage,
+    percentage: parseFloat(r.percentage),
     fragranceName: r.name
+  }));
+}
+
+// ── Utility: fetch waxes for a product
+async function fetchWaxes(productId: string) {
+  const res = await query(`
+    SELECT pw.wax_type_id, pw.percentage, wt.name
+    FROM product_waxes pw
+    JOIN wax_types wt ON pw.wax_type_id = wt.id
+    WHERE pw.product_id = $1
+  `, [productId]);
+  
+  return res.rows.map(r => ({
+    waxTypeId: r.wax_type_id,
+    percentage: parseFloat(r.percentage),
+    waxTypeName: r.name
   }));
 }
 
@@ -27,6 +44,7 @@ async function enrichProduct(productRow: any) {
   const containerTypeName = ctRes.rows.length > 0 ? ctRes.rows[0].name : 'Unknown';
   
   const fragrances = await fetchFragrances(productRow.id);
+  const waxes = await fetchWaxes(productRow.id);
   
   return {
     id: productRow.id,
@@ -35,11 +53,12 @@ async function enrichProduct(productRow: any) {
     cost: productRow.cost,
     weightGrams: productRow.weight_grams,
     containerTypeId: productRow.container_type_id,
+    fragranceLoad: parseFloat(productRow.fragrance_load || 0),
     createdAt: productRow.created_at.toISOString(),
     profit: productRow.price - productRow.cost,
     containerTypeName,
-    fragranceDetails: fragrances,
-    fragrances: fragrances.map(f => ({ fragranceId: f.fragranceId, percentage: f.percentage }))
+    fragrances,
+    waxes
   };
 }
 
@@ -62,6 +81,7 @@ router.get('/', async (req: Request, res: Response) => {
     const enriched = await Promise.all(result.rows.map(enrichProduct));
     res.json(enriched);
   } catch (err) {
+    logger.error('Database operation failed in products route', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -77,6 +97,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     const enriched = await enrichProduct(result.rows[0]);
     res.json(enriched);
   } catch (err) {
+    logger.error('Database operation failed in products route', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -86,9 +107,15 @@ router.post('/', async (req: Request, res: Response) => {
   try {
     const body = req.body as Omit<Product, 'id' | 'createdAt'>;
 
-    const total = body.fragrances.reduce((sum, f) => sum + f.percentage, 0);
-    if (Math.round(total) !== 100) {
-      res.status(400).json({ error: `Fragrance percentages must sum to 100. Got: ${total}` });
+    const fragTotal = body.fragrances.reduce((sum, f) => sum + f.percentage, 0);
+    if (Math.round(fragTotal) !== 100) {
+      res.status(400).json({ error: `Fragrance percentages must sum to 100. Got: ${fragTotal}` });
+      return;
+    }
+
+    const waxTotal = body.waxes.reduce((sum, w) => sum + w.percentage, 0);
+    if (Math.round(waxTotal) !== 100) {
+      res.status(400).json({ error: `Wax percentages must sum to 100. Got: ${waxTotal}` });
       return;
     }
 
@@ -106,10 +133,18 @@ router.post('/', async (req: Request, res: Response) => {
       }
     }
 
+    for (const w of body.waxes) {
+      const wxRes = await query('SELECT * FROM wax_types WHERE id = $1 AND is_active = true', [w.waxTypeId]);
+      if (wxRes.rows.length === 0) {
+        res.status(400).json({ error: `Invalid or inactive wax type: ${w.waxTypeId}` });
+        return;
+      }
+    }
+
     const newId = `prod-${uuidv4()}`;
     const result = await query(
-      'INSERT INTO products (id, name, price, cost, weight_grams, container_type_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [newId, body.name, body.price, body.cost, body.weightGrams, body.containerTypeId]
+      'INSERT INTO products (id, name, price, cost, weight_grams, container_type_id, fragrance_load) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [newId, body.name, body.price, body.cost, body.weightGrams, body.containerTypeId, body.fragranceLoad]
     );
 
     for (const f of body.fragrances) {
@@ -119,9 +154,17 @@ router.post('/', async (req: Request, res: Response) => {
       );
     }
 
+    for (const w of body.waxes) {
+      await query(
+        'INSERT INTO product_waxes (product_id, wax_type_id, percentage) VALUES ($1, $2, $3)',
+        [newId, w.waxTypeId, w.percentage]
+      );
+    }
+
     const enriched = await enrichProduct(result.rows[0]);
     res.status(201).json(enriched);
   } catch (err) {
+    logger.error('Database operation failed in products route', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -139,6 +182,14 @@ router.put('/:id', async (req: Request, res: Response) => {
       }
     }
 
+    if (updates.waxes) {
+      const total = updates.waxes.reduce((sum, w) => sum + w.percentage, 0);
+      if (Math.round(total) !== 100) {
+        res.status(400).json({ error: `Wax percentages must sum to 100. Got: ${total}` });
+        return;
+      }
+    }
+
     const current = await query('SELECT * FROM products WHERE id = $1', [req.params.id]);
     if (current.rows.length === 0) {
       res.status(404).json({ error: 'Product not found.' });
@@ -151,10 +202,11 @@ router.put('/:id', async (req: Request, res: Response) => {
     const newCost = updates.cost ?? row.cost;
     const newWeight = updates.weightGrams ?? row.weight_grams;
     const newContainerTypeId = updates.containerTypeId ?? row.container_type_id;
+    const newFragranceLoad = updates.fragranceLoad ?? row.fragrance_load;
 
     const result = await query(
-      'UPDATE products SET name = $1, price = $2, cost = $3, weight_grams = $4, container_type_id = $5 WHERE id = $6 RETURNING *',
-      [newName, newPrice, newCost, newWeight, newContainerTypeId, req.params.id]
+      'UPDATE products SET name = $1, price = $2, cost = $3, weight_grams = $4, container_type_id = $5, fragrance_load = $6 WHERE id = $7 RETURNING *',
+      [newName, newPrice, newCost, newWeight, newContainerTypeId, newFragranceLoad, req.params.id]
     );
 
     if (updates.fragrances) {
@@ -167,9 +219,20 @@ router.put('/:id', async (req: Request, res: Response) => {
       }
     }
 
+    if (updates.waxes) {
+      await query('DELETE FROM product_waxes WHERE product_id = $1', [req.params.id]);
+      for (const w of updates.waxes) {
+        await query(
+          'INSERT INTO product_waxes (product_id, wax_type_id, percentage) VALUES ($1, $2, $3)',
+          [req.params.id, w.waxTypeId, w.percentage]
+        );
+      }
+    }
+
     const enriched = await enrichProduct(result.rows[0]);
     res.json(enriched);
   } catch (err) {
+    logger.error('Database operation failed in products route', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
@@ -191,6 +254,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
     }
     res.json({ message: 'Product deleted.' });
   } catch (err) {
+    logger.error('Database operation failed in products route', err);
     res.status(500).json({ error: 'Database error' });
   }
 });

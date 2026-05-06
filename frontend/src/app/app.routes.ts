@@ -27,6 +27,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/products/product-create/product-create.component').then(m => m.ProductCreateComponent),
   },
   {
+    path: 'products/:id/edit',
+    loadComponent: () => import('./pages/products/product-create/product-create.component').then(m => m.ProductCreateComponent),
+  },
+  {
     path: 'master-data',
     loadComponent: () => import('./pages/master-data/master-data.component').then(m => m.MasterDataComponent),
   },

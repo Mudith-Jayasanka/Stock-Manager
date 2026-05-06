@@ -67,9 +67,14 @@
           </div>
         </td>
         <td>
-          <button class="btn btn-danger" style="padding: 5px 8px;" (click)="deleteProduct(p.id)">
-            <span class="material-icons" style="font-size:16px">delete</span>
-          </button>
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <a [routerLink]="['/products', p.id, 'edit']" class="btn btn-ghost" style="padding: 5px 8px;" title="Edit product">
+              <span class="material-icons" style="font-size:16px">edit</span>
+            </a>
+            <button class="btn btn-danger" style="padding: 5px 8px;" (click)="deleteProduct(p.id)" title="Delete product">
+              <span class="material-icons" style="font-size:16px">delete</span>
+            </button>
+          </div>
         </td>
       </tr>
     </tbody>

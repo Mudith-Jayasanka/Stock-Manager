@@ -17,6 +17,11 @@
     Fragrances
     <span class="tab-count">{{ fragrances.length }}</span>
   </button>
+  <button class="tab" [class.active]="activeTab === 'wax'" (click)="activeTab = 'wax'">
+    <span class="material-icons">science</span>
+    Wax Types
+    <span class="tab-count">{{ waxTypes.length }}</span>
+  </button>
 </div>
 
 <!-- ─── Container Types Tab ─────────────────────────────────────────────────── -->
@@ -134,6 +139,68 @@
           </td>
           <td class="action-cell">
             <button class="btn btn-danger" (click)="deleteFragrance(item.id)" [disabled]="!item.isActive" title="Delete or archive">
+              <span class="material-icons">{{ (item.usageCount ?? 0) > 0 ? 'archive' : 'delete' }}</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── Wax Types Tab ───────────────────────────────────────────────────────── -->
+<div *ngIf="activeTab === 'wax'" class="tab-content">
+  <!-- Add form -->
+  <div class="card add-form">
+    <h3>Add Wax Type</h3>
+    <div class="add-row">
+      <input
+        type="text"
+        [(ngModel)]="newWaxName"
+        placeholder="e.g. Soy Wax (C3)"
+        (keyup.enter)="addWaxType()"
+      />
+      <button class="btn btn-primary" (click)="addWaxType()" [disabled]="!newWaxName.trim()">
+        <span class="material-icons">add</span> Add
+      </button>
+    </div>
+  </div>
+
+  <!-- List -->
+  <div class="card" style="padding: 0;">
+    <div *ngIf="waxTypes.length === 0" class="empty-state">
+      <span class="material-icons">science</span>
+      <p>No wax types configured</p>
+    </div>
+    <table *ngIf="waxTypes.length > 0" class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Used In</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of waxTypes" [class.archived]="!item.isActive">
+          <td>
+            <div class="item-name">
+              <span class="material-icons item-icon">science</span>
+              {{ item.name }}
+            </div>
+          </td>
+          <td>
+            <span class="status-badge" [class.delivered]="item.isActive" [class.cancelled]="!item.isActive">
+              {{ item.isActive ? 'Active' : 'Archived' }}
+            </span>
+          </td>
+          <td>
+            <span class="usage-count" [class.in-use]="(item.usageCount ?? 0) > 0">
+              {{ item.usageCount ?? 0 }} product(s)
+            </span>
+          </td>
+          <td class="action-cell">
+            <button class="btn btn-danger" (click)="deleteWaxType(item.id)" [disabled]="!item.isActive" title="Delete or archive">
               <span class="material-icons">{{ (item.usageCount ?? 0) > 0 ? 'archive' : 'delete' }}</span>
             </button>
           </td>
