@@ -27,7 +27,11 @@ Use this skill when managing features or bugfixes in the Stock-Manager repositor
 
 ### 4. Develop & Test
 - Run dev server: `npm run dev:devdb`
-- Perform changes and test APIs/UI.
+- **UI Selector Tagging**: Whenever adding or modifying UI elements in Angular HTML templates, immediately tag them with `data-testid="..."` attributes and register keys in `frontend/src/app/testing/ui-selectors.ts`.
+- **E2E Test Updates**: Maintain sequential dependency ordering (Master Data -> Customers -> Products -> Orders) in `tests/e2e/app.spec.ts`.
+- Run automated API & E2E verification:
+  - `npm run test:api`
+  - `npm run test:e2e` (or `npm run test:e2e:headed` if visible verification is requested)
 
 ### 5. Finalize & Merge (ONLY after explicit User Confirmation)
 - Wait for user to test and explicitly confirm the task is done.

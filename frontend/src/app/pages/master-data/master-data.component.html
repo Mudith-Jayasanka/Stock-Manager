@@ -7,17 +7,17 @@
 
 <!-- Tabs -->
 <div class="tabs">
-  <button class="tab" [class.active]="activeTab === 'containers'" (click)="activeTab = 'containers'">
+  <button class="tab" [class.active]="activeTab === 'containers'" (click)="activeTab = 'containers'" data-testid="tab-containers">
     <span class="material-icons">inventory_2</span>
     Container Types
     <span class="tab-count">{{ containerTypes.length }}</span>
   </button>
-  <button class="tab" [class.active]="activeTab === 'fragrances'" (click)="activeTab = 'fragrances'">
+  <button class="tab" [class.active]="activeTab === 'fragrances'" (click)="activeTab = 'fragrances'" data-testid="tab-fragrances">
     <span class="material-icons">local_florist</span>
     Fragrances
     <span class="tab-count">{{ fragrances.length }}</span>
   </button>
-  <button class="tab" [class.active]="activeTab === 'wax'" (click)="activeTab = 'wax'">
+  <button class="tab" [class.active]="activeTab === 'wax'" (click)="activeTab = 'wax'" data-testid="tab-waxes">
     <span class="material-icons">science</span>
     Wax Types
     <span class="tab-count">{{ waxTypes.length }}</span>
@@ -35,8 +35,9 @@
         [(ngModel)]="newContainerName"
         placeholder="e.g. Glass Jar (12oz)"
         (keyup.enter)="addContainerType()"
+        data-testid="master-data-name-input"
       />
-      <button class="btn btn-primary" (click)="addContainerType()" [disabled]="!newContainerName.trim()">
+      <button class="btn btn-primary" (click)="addContainerType()" [disabled]="!newContainerName.trim()" data-testid="master-data-add-btn">
         <span class="material-icons">add</span> Add
       </button>
     </div>
@@ -104,7 +105,7 @@
         placeholder="e.g. Jasmine & Sandalwood"
         (keyup.enter)="addFragrance()"
       />
-      <button class="btn btn-primary" (click)="addFragrance()" [disabled]="!newFragranceName.trim()">
+      <button class="btn btn-primary" (click)="addFragrance()" [disabled]="!newFragranceName.trim()" data-testid="master-data-add-btn">
         <span class="material-icons">add</span> Add
       </button>
     </div>
@@ -172,7 +173,7 @@
         placeholder="e.g. Soy Wax (C3)"
         (keyup.enter)="addWaxType()"
       />
-      <button class="btn btn-primary" (click)="addWaxType()" [disabled]="!newWaxName.trim()">
+      <button class="btn btn-primary" (click)="addWaxType()" [disabled]="!newWaxName.trim()" data-testid="master-data-add-btn">
         <span class="material-icons">add</span> Add
       </button>
     </div>

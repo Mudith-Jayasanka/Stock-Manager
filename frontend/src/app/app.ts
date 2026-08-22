@@ -42,37 +42,37 @@ interface HealthResponse {
 
         <ul class="nav-links">
           <li>
-            <a routerLink="/orders" routerLinkActive="active" (click)="sidebarOpen = false">
+            <a routerLink="/orders" routerLinkActive="active" (click)="sidebarOpen = false" [attr.data-testid]="'nav-orders-link'">
               <span class="material-icons">receipt_long</span>
               Orders
             </a>
           </li>
           <li>
-            <a routerLink="/customers" routerLinkActive="active" (click)="sidebarOpen = false">
+            <a routerLink="/customers" routerLinkActive="active" (click)="sidebarOpen = false" [attr.data-testid]="'nav-customers-link'">
               <span class="material-icons">people</span>
               Customers
             </a>
           </li>
           <li>
-            <a routerLink="/products" routerLinkActive="active" (click)="sidebarOpen = false">
+            <a routerLink="/products" routerLinkActive="active" (click)="sidebarOpen = false" [attr.data-testid]="'nav-products-link'">
               <span class="material-icons">inventory_2</span>
               Products
             </a>
           </li>
           <li>
-            <a routerLink="/purchases" routerLinkActive="active" (click)="sidebarOpen = false">
+            <a routerLink="/purchases" routerLinkActive="active" (click)="sidebarOpen = false" [attr.data-testid]="'nav-purchases-link'">
               <span class="material-icons">shopping_bag</span>
               Purchases
             </a>
           </li>
           <li>
-            <a routerLink="/labels" routerLinkActive="active" (click)="sidebarOpen = false">
+            <a routerLink="/labels" routerLinkActive="active" (click)="sidebarOpen = false" [attr.data-testid]="'nav-labels-link'">
               <span class="material-icons">dashboard_customize</span>
               Labels
             </a>
           </li>
           <li>
-            <a routerLink="/master-data" routerLinkActive="active" (click)="sidebarOpen = false">
+            <a routerLink="/master-data" routerLinkActive="active" (click)="sidebarOpen = false" [attr.data-testid]="'nav-master-data-link'">
               <span class="material-icons">tune</span>
               Master Data
             </a>
