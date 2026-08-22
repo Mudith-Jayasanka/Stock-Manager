@@ -66,6 +66,8 @@ export interface Product {
   price: number;
   cost: number;
   bomCost?: number;
+  isBomComplete?: boolean;
+  missingMaterials?: string[];
   profitMarginPercent?: number;
   profit?: number;
   weightGrams: number;

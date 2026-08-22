@@ -3,7 +3,7 @@
     <h1>Products</h1>
     <p>Manage your scented candle catalog</p>
   </div>
-  <a routerLink="/products/create" class="btn btn-primary">
+  <a routerLink="/products/create" class="btn btn-primary" data-testid="products-create-btn">
     <span class="material-icons">add</span> Create Product
   </a>
 </div>
@@ -12,11 +12,11 @@
 <div class="toolbar card">
   <div class="search-box">
     <span class="material-icons">search</span>
-    <input type="text" placeholder="Search products…" [(ngModel)]="searchQuery" (input)="onSearch()">
+    <input type="text" placeholder="Search products…" [(ngModel)]="searchQuery" (input)="onSearch()" data-testid="products-search-input">
   </div>
   <div class="sort-box">
     <span class="material-icons">sort</span>
-    <select [(ngModel)]="sortBy" (change)="onSortChange()">
+    <select [(ngModel)]="sortBy" (change)="onSortChange()" data-testid="products-sort-select">
       <option *ngFor="let s of sortOptions" [value]="s.value">{{ s.label }}</option>
     </select>
   </div>
@@ -31,7 +31,7 @@
     <span class="material-icons">inventory_2</span><p>No products found</p>
   </div>
 
-  <table *ngIf="!loading && filteredProducts.length > 0" class="data-table">
+  <table *ngIf="!loading && filteredProducts.length > 0" class="data-table" data-testid="products-table">
     <thead>
       <tr>
         <th>Product</th>
@@ -45,21 +45,36 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let p of filteredProducts">
+      <tr *ngFor="let p of filteredProducts" [attr.data-testid]="'product-row-' + p.id">
         <td>
-          <span class="product-name">{{ p.name }}</span>
+          <span class="product-name" [attr.data-testid]="'product-name-' + p.id">{{ p.name }}</span>
           <span class="product-date">{{ p.createdAt | date:'MMM d, y' }}</span>
         </td>
         <td>{{ p.containerTypeName }}</td>
         <td>{{ p.weightGrams }}g</td>
-        <td class="price-cell">{{ formatPrice(p.price) }}</td>
-        <td class="cost-cell">
-          {{ formatPrice(p.bomCost || p.cost) }}
-          <span *ngIf="p.bomCost" class="bom-tag">BOM</span>
+        <td class="price-cell" [attr.data-testid]="'product-price-' + p.id">{{ formatPrice(p.price) }}</td>
+        <td class="cost-cell" [attr.data-testid]="'product-cost-' + p.id">
+          <div class="cost-cell-content">
+            <span>{{ formatPrice(p.bomCost || p.cost) }}</span>
+            <ng-container *ngIf="p.bomCost">
+              <span *ngIf="p.isBomComplete !== false" class="bom-tag" [attr.data-testid]="'product-bom-badge-' + p.id">BOM</span>
+              <span *ngIf="p.isBomComplete === false" class="bom-tag partial" [attr.data-testid]="'product-bom-badge-' + p.id">Partial BOM</span>
+            </ng-container>
+            <div class="tooltip-container" *ngIf="p.missingMaterials && p.missingMaterials.length > 0">
+              <span class="material-icons warning-icon" [attr.data-testid]="'product-warning-icon-' + p.id">warning</span>
+              <div class="tooltip-box" [attr.data-testid]="'product-tooltip-' + p.id">
+                <strong>Incomplete BOM Cost</strong>
+                <p>Missing purchase records for:</p>
+                <ul>
+                  <li *ngFor="let m of p.missingMaterials">{{ m }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </td>
         <td>
           <div class="profit-container">
-            <span class="profit-badge" [class.positive]="(p.profit ?? 0) > 0">
+            <span class="profit-badge" [class.positive]="(p.profit ?? 0) > 0" [attr.data-testid]="'product-profit-badge-' + p.id">
               {{ formatPrice(p.profit ?? (p.price - (p.bomCost || p.cost))) }}
             </span>
             <span *ngIf="p.profitMarginPercent !== undefined" class="margin-percent">
@@ -76,10 +91,10 @@
         </td>
         <td>
           <div style="display: flex; gap: 8px; justify-content: flex-end;">
-            <a [routerLink]="['/products', p.id, 'edit']" class="btn btn-ghost" style="padding: 5px 8px;" title="Edit product">
+            <a [routerLink]="['/products', p.id, 'edit']" class="btn btn-ghost" style="padding: 5px 8px;" title="Edit product" [attr.data-testid]="'product-edit-btn-' + p.id">
               <span class="material-icons" style="font-size:16px">edit</span>
             </a>
-            <button class="btn btn-danger" style="padding: 5px 8px;" (click)="deleteProduct(p.id)" title="Delete product">
+            <button class="btn btn-danger" style="padding: 5px 8px;" (click)="deleteProduct(p.id)" title="Delete product" [attr.data-testid]="'product-delete-btn-' + p.id">
               <span class="material-icons" style="font-size:16px">delete</span>
             </button>
           </div>

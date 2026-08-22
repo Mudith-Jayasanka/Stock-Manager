@@ -17,5 +17,5 @@ This directory contains markdown specifications for all features and bugfixes de
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `FEAT-000` | Baseline System Setup & Core Schema | Feature | Completed | `main` | 2026-08-22 |
 | `FEAT-001` | Raw Material Purchases & Dynamic BOM Cost Calculation | Feature | Completed | `feat/FEAT-001` | 2026-08-22 |
-| `FEAT-002` | Incomplete BOM Cost Warning & Missing Raw Materials Tooltip | Feature | Draft | `feat/FEAT-002` | 2026-08-22 |
+| `FEAT-002` | Incomplete BOM Warning, Tooltip & Verification Test Suite | Feature | Completed | `feat/FEAT-002` | 2026-08-22 |
 | `BUG-001` | Profit badge text wrapping fix | Bugfix | Completed | `fix/BUG-001` | 2026-08-22 |

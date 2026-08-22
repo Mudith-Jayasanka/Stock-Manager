@@ -63,7 +63,23 @@ async function enrichProduct(productRow: any) {
 
   const rawBomCost = fragranceCost + waxCost + containerUnitCost;
   const bomCost = rawBomCost > 0 ? Math.round(rawBomCost * 100) / 100 : parseFloat(productRow.cost || 0);
-  
+
+  const missingMaterials: string[] = [];
+  if (containerUnitCost === 0) {
+    missingMaterials.push(`Container: ${containerTypeName}`);
+  }
+  for (const f of fragrances) {
+    if (f.unitCost === 0) {
+      missingMaterials.push(`Fragrance: ${f.fragranceName || 'Unknown Fragrance'}`);
+    }
+  }
+  for (const w of waxes) {
+    if (w.unitCost === 0) {
+      missingMaterials.push(`Wax: ${w.waxTypeName || 'Unknown Wax'}`);
+    }
+  }
+  const isBomComplete = missingMaterials.length === 0;
+
   const price = parseFloat(productRow.price || 0);
   const effectiveCost = bomCost > 0 ? bomCost : parseFloat(productRow.cost || 0);
   const profit = price - effectiveCost;
@@ -75,6 +91,8 @@ async function enrichProduct(productRow: any) {
     price: productRow.price,
     cost: productRow.cost, // static fallback
     bomCost, // dynamic calculated BOM cost
+    isBomComplete,
+    missingMaterials,
     profitMarginPercent,
     weightGrams: productRow.weight_grams,
     containerTypeId: productRow.container_type_id,

@@ -115,17 +115,20 @@
             <div class="category-toggle">
               <button type="button" 
                       [class.active]="formMaterialType === 'wax'" 
-                      (click)="formMaterialType = 'wax'; onTypeChange()">
+                      (click)="formMaterialType = 'wax'; onTypeChange()"
+                      data-testid="purchase-category-wax-btn">
                 <span class="material-icons">oil_barrel</span> Wax
               </button>
               <button type="button" 
                       [class.active]="formMaterialType === 'fragrance'" 
-                      (click)="formMaterialType = 'fragrance'; onTypeChange()">
+                      (click)="formMaterialType = 'fragrance'; onTypeChange()"
+                      data-testid="purchase-category-fragrance-btn">
                 <span class="material-icons">local_florist</span> Fragrance Oil
               </button>
               <button type="button" 
                       [class.active]="formMaterialType === 'container'" 
-                      (click)="formMaterialType = 'container'; onTypeChange()">
+                      (click)="formMaterialType = 'container'; onTypeChange()"
+                      data-testid="purchase-category-container-btn">
                 <span class="material-icons">takeout_dining</span> Container / Jar
               </button>
             </div>
@@ -134,7 +137,7 @@
           <!-- Select Material -->
           <div class="form-group">
             <label>Select Material *</label>
-            <select [(ngModel)]="formMaterialId" name="materialId" required class="form-control">
+            <select [(ngModel)]="formMaterialId" name="materialId" required class="form-control" data-testid="purchase-material-id-select">
               <option value="" disabled>-- Select {{ formMaterialType | titlecase }} --</option>
               <option *ngFor="let m of availableMaterials" [value]="m.id">{{ m.name }}</option>
             </select>
@@ -144,12 +147,12 @@
           <div class="form-row">
             <div class="form-group flex-1">
               <label>Quantity Purchased *</label>
-              <input type="number" [(ngModel)]="formQuantity" name="quantity" min="0.01" step="any" required placeholder="e.g. 5" class="form-control" />
+              <input type="number" [(ngModel)]="formQuantity" name="quantity" min="0.01" step="any" required placeholder="e.g. 5" class="form-control" data-testid="purchase-quantity-input" />
             </div>
 
             <div class="form-group flex-1">
               <label>Unit *</label>
-              <select [(ngModel)]="formUnit" name="unit" required class="form-control">
+              <select [(ngModel)]="formUnit" name="unit" required class="form-control" data-testid="purchase-unit-select">
                 <ng-container *ngIf="formMaterialType === 'wax'">
                   <option value="kg">Kilograms (kg)</option>
                   <option value="g">Grams (g)</option>
@@ -170,7 +173,7 @@
           <!-- Total Cost -->
           <div class="form-group">
             <label>Total Purchase Cost (Rs.) *</label>
-            <input type="number" [(ngModel)]="formTotalCost" name="totalCost" min="1" step="any" required placeholder="e.g. 7500" class="form-control" />
+            <input type="number" [(ngModel)]="formTotalCost" name="totalCost" min="1" step="any" required placeholder="e.g. 7500" class="form-control" data-testid="purchase-total-cost-input" />
           </div>
 
           <!-- Unit Cost Preview Box -->
@@ -185,19 +188,19 @@
           <!-- Supplier & Notes -->
           <div class="form-group">
             <label>Supplier Name (Optional)</label>
-            <input type="text" [(ngModel)]="formSupplier" name="supplier" placeholder="e.g. CandleSupplies Ltd." class="form-control" />
+            <input type="text" [(ngModel)]="formSupplier" name="supplier" placeholder="e.g. CandleSupplies Ltd." class="form-control" data-testid="purchase-supplier-input" />
           </div>
 
           <div class="form-group">
             <label>Notes / Batch Info (Optional)</label>
-            <textarea [(ngModel)]="formNotes" name="notes" rows="2" placeholder="e.g. 10% volume discount applied" class="form-control"></textarea>
+            <textarea [(ngModel)]="formNotes" name="notes" rows="2" placeholder="e.g. 10% volume discount applied" class="form-control" data-testid="purchase-notes-input"></textarea>
           </div>
 
         </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary" [disabled]="!purchaseForm.form.valid || submitting">
+          <button type="submit" class="btn btn-primary" [disabled]="!purchaseForm.form.valid || submitting" data-testid="purchase-submit-btn">
             {{ submitting ? 'Saving...' : 'Save Purchase Log' }}
           </button>
         </div>

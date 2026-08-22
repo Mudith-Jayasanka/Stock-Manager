@@ -66,6 +66,73 @@
   border-radius: 4px;
   margin-left: 4px;
   vertical-align: middle;
+
+  &.partial {
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.15);
+  }
+}
+
+.cost-cell-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+
+  .warning-icon {
+    font-size: 14px;
+    color: #f59e0b;
+  }
+
+  .tooltip-box {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: #f9fafb;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    white-space: nowrap;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    strong {
+      display: block;
+      color: #fbbf24;
+      margin-bottom: 2px;
+      font-size: 11px;
+    }
+    p {
+      margin: 0 0 4px 0;
+      color: #9ca3af;
+      font-size: 10px;
+    }
+    ul {
+      margin: 0;
+      padding-left: 14px;
+      li {
+        color: #e5e7eb;
+        font-size: 10px;
+      }
+    }
+  }
+
+  &:hover .tooltip-box {
+    visibility: visible;
+    opacity: 1;
+  }
 }
 
 .margin-percent {

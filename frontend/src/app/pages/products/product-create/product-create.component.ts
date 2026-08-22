@@ -215,6 +215,29 @@ export class ProductCreateComponent implements OnInit {
     return total > 0 ? Math.round(total * 100) / 100 : 0;
   }
 
+  get missingPreviewMaterials(): string[] {
+    const missing: string[] = [];
+    if (this.selectedContainerTypeId) {
+      const c = this.containerTypes.find(ct => ct.id === this.selectedContainerTypeId);
+      if (!c?.unitCost || c.unitCost === 0) {
+        missing.push(`Container: ${c?.name || 'Selected Container'}`);
+      }
+    }
+    for (const f of this.fragranceComposition) {
+      const masterFrag = this.availableFragrances.find(af => af.id === f.fragranceId);
+      if (!masterFrag?.unitCost || masterFrag.unitCost === 0) {
+        missing.push(`Fragrance: ${f.name || masterFrag?.name || 'Selected Fragrance'}`);
+      }
+    }
+    for (const w of this.waxComposition) {
+      const masterWax = this.availableWaxes.find(aw => aw.id === w.waxTypeId);
+      if (!masterWax?.unitCost || masterWax.unitCost === 0) {
+        missing.push(`Wax: ${w.name || masterWax?.name || 'Selected Wax'}`);
+      }
+    }
+    return missing;
+  }
+
   get effectiveCost(): number {
     return this.estimatedBomCost > 0 ? this.estimatedBomCost : (this.cost || 0);
   }

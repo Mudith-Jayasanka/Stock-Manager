@@ -59,6 +59,8 @@ export interface Product {
   price: number;
   cost: number; // Manual fallback cost
   bomCost?: number; // Dynamically calculated BOM cost
+  isBomComplete?: boolean; // True if all raw materials have purchase history
+  missingMaterials?: string[]; // Names of materials missing purchase history
   profitMarginPercent?: number; // Profit margin percentage
   weightGrams: number;
   containerTypeId: string;
