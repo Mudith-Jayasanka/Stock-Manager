@@ -1,44 +1,18 @@
-# Feature Specifications (`docs/features/`)
+# Feature & Bugfix Specifications (`docs/features/`)
 
-This directory contains markdown specifications for all features developed for the Stock-Manager system. Each feature is tracked by a unique Ticket ID (e.g. `FEAT-001.md`, `FEAT-002.md`).
+This directory contains markdown specifications for all features and bugfixes developed for the Stock-Manager system. Each task is tracked by a unique Ticket ID:
+- **Features**: `FEAT-001.md`, `FEAT-002.md`, etc.
+- **Bugfixes**: `BUG-001.md`, `BUG-002.md`, etc.
 
 ## Purpose
-1. **Persistent Requirements Memory**: Stores complete functional requirements, schema impact, API endpoints, and business rules.
-2. **Conflict Prevention**: Prior to starting any new development, the AI assistant scans all feature specs in this directory to ensure new proposals do not contradict existing features or workflows.
-3. **Branch Traceability**: Git feature branches are named directly after the Ticket ID (e.g., `feat/FEAT-001`).
+1. **Persistent Requirements Memory**: Stores complete functional requirements, bug details, schema impact, API endpoints, and business rules.
+2. **Conflict & Regression Prevention**: Prior to starting any new task, the AI assistant scans all specs in this directory to ensure proposals do not contradict existing features or introduce regressions.
+3. **Branch Traceability**: Git branches are named directly after the Ticket ID (`feat/FEAT-XXX` or `fix/BUG-XXX`).
 
 ---
 
-## File Template (`FEAT-XXX.md`)
+## Ticket Log Index
 
-```markdown
-# FEAT-XXX: [Feature Title]
-
-- **Status**: Draft | In Progress | Completed | Deprecated
-- **Created Date**: YYYY-MM-DD
-- **Target Branch**: feat/FEAT-XXX
-
-## 1. High-Level Summary
-Brief description of the problem and what this feature accomplishes.
-
-## 2. Business Logic & Rules
-Detailed business requirements and constraints.
-
-## 3. Database Schema Changes
-New tables, columns, sequences, or index modifications.
-
-## 4. API Endpoints
-New or modified Express routes and signatures.
-
-## 5. UI & Integration Impact
-Impact on frontend or external integrations.
-```
-
----
-
-## Feature Log Index
-
-| Ticket ID | Title | Status | Target Branch | Date Created |
-| :--- | :--- | :--- | :--- | :--- |
-| `FEAT-000` | Baseline System Setup & Core Schema | Completed | `main` | 2026-08-22 |
-
+| Ticket ID | Title | Type | Status | Target Branch | Date Created |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `FEAT-000` | Baseline System Setup & Core Schema | Feature | Completed | `main` | 2026-08-22 |
