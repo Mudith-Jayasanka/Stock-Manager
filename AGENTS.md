@@ -32,7 +32,9 @@ When the user requests a new feature, enhancement, or bugfix:
 
 ## 3. Ticket Completion & Merging Protocol
 
-When the user approves a feature or bugfix for completion:
+**IMPORTANT**: Do NOT restore `devdb` or merge back to `main` until the user explicitly reviews and approves/confirms that the feature or bugfix task is considered done.
+
+When the user explicitly approves a feature or bugfix for completion:
 1. Update `docs/features/FEAT-XXX.md` or `docs/features/BUG-XXX.md` status to `Completed`.
 2. Restore clean baseline data on `devdb` if dirty test records were generated (`npm run db:restore:dev`).
 3. Merge branch into `main`:

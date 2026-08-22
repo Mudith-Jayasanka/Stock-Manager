@@ -29,7 +29,8 @@ Use this skill when managing features or bugfixes in the Stock-Manager repositor
 - Run dev server: `npm run dev:devdb`
 - Perform changes and test APIs/UI.
 
-### 5. Finalize & Merge
+### 5. Finalize & Merge (ONLY after explicit User Confirmation)
+- Wait for user to test and explicitly confirm the task is done.
 - Restore clean snapshot if needed: `npm run db:restore:dev`
 - Update tracking file status to `Completed`.
 - Commit changes and merge branch into `main`.
