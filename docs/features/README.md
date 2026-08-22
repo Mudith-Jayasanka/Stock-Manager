@@ -16,3 +16,4 @@ This directory contains markdown specifications for all features and bugfixes de
 | Ticket ID | Title | Type | Status | Target Branch | Date Created |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `FEAT-000` | Baseline System Setup & Core Schema | Feature | Completed | `main` | 2026-08-22 |
+| `BUG-001` | Profit badge text wrapping fix | Bugfix | Completed | `fix/BUG-001` | 2026-08-22 |

@@ -32,10 +32,12 @@
 .product-name { display: block; font-weight: 600; }
 .product-date { display: block; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
-.price-cell { font-weight: 600; color: var(--text-primary); }
-.cost-cell { color: var(--text-secondary); }
+.price-cell { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
+.cost-cell { color: var(--text-secondary); white-space: nowrap; }
 
 .profit-badge {
+  display: inline-block;
+  white-space: nowrap;
   padding: 3px 10px;
   border-radius: 20px;
   font-size: 12px;
