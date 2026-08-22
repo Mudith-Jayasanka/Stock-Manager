@@ -21,7 +21,7 @@ Verify that any newly added or modified UI elements (inputs, buttons, headers, s
 ### 3. API & Business Logic Integration Suite
 Execute the automated API integration test suite against `devdb`:
 ```bash
-cd backend && DB_MODE=development npx ts-node -e "import '../tests/api/products.test';"
+cd backend && DB_MODE=development node -r ts-node/register --test ../tests/api/all.test.ts
 ```
 
 ### 4. Direct Selectors & E2E Validation

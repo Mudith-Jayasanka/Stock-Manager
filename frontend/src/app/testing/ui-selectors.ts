@@ -4,6 +4,8 @@ export const UI_SELECTORS = {
     PURCHASES_LINK: 'nav-purchases-link',
     MASTER_DATA_LINK: 'nav-master-data-link',
     ORDERS_LINK: 'nav-orders-link',
+    CUSTOMERS_LINK: 'nav-customers-link',
+    LABELS_LINK: 'nav-labels-link',
   },
   PRODUCTS: {
     LIST: {
@@ -61,6 +63,66 @@ export const UI_SELECTORS = {
     ADD_BTN: 'master-data-add-btn',
     NAME_INPUT: 'master-data-name-input',
     SUBMIT_BTN: 'master-data-submit-btn',
+    TABLE: 'master-data-table',
+    ROW: (id: string) => `master-data-row-${id}`,
+    TOGGLE_STATUS_BTN: (id: string) => `master-data-toggle-${id}`,
+  },
+  CUSTOMERS: {
+    LIST: {
+      CREATE_BTN: 'customers-create-btn',
+      SEARCH_INPUT: 'customers-search-input',
+      TABLE: 'customers-table',
+      ROW: (id: string) => `customer-row-${id}`,
+      NAME_CELL: (id: string) => `customer-name-${id}`,
+      PHONE_CELL: (id: string) => `customer-phone-${id}`,
+      EDIT_BTN: (id: string) => `customer-edit-btn-${id}`,
+    },
+    FORM: {
+      NAME_INPUT: 'customer-name-input',
+      PHONE_INPUT: 'customer-phone-input',
+      EMAIL_INPUT: 'customer-email-input',
+      ADDRESS_INPUT: 'customer-address-input',
+      SAVE_BTN: 'customer-save-btn',
+      CANCEL_BTN: 'customer-cancel-btn',
+    },
+  },
+  ORDERS: {
+    LIST: {
+      CREATE_BTN: 'orders-create-btn',
+      STATUS_FILTER: 'orders-status-filter',
+      TABLE: 'orders-table',
+      ROW: (id: string) => `order-row-${id}`,
+      STATUS_BADGE: (id: string) => `order-status-${id}`,
+    },
+    CREATE: {
+      CUSTOMER_SELECT: 'order-customer-select',
+      PRODUCT_SELECT: 'order-product-select',
+      QUANTITY_INPUT: 'order-quantity-input',
+      ADD_ITEM_BTN: 'order-add-item-btn',
+      SAVE_BTN: 'order-save-btn',
+      CANCEL_BTN: 'order-cancel-btn',
+      TOTAL_PRICE: 'order-total-price',
+    },
+    DETAIL: {
+      STATUS_SELECT: 'order-detail-status-select',
+      CANCEL_BTN: 'order-detail-cancel-btn',
+      CANCEL_REASON_INPUT: 'order-detail-cancel-reason-input',
+      CONFIRM_CANCEL_BTN: 'order-detail-confirm-cancel-btn',
+      PROFIT_BADGE: 'order-detail-profit-badge',
+    },
+  },
+  LABELS: {
+    LIST: {
+      CREATE_BTN: 'labels-create-btn',
+      TABLE: 'labels-table',
+      ROW: (id: string) => `label-row-${id}`,
+    },
+    DESIGNER: {
+      NAME_INPUT: 'label-name-input',
+      CANVAS: 'label-canvas',
+      ADD_TEXT_BTN: 'label-add-text-btn',
+      PLACEHOLDER_SELECT: 'label-placeholder-select',
+      SAVE_BTN: 'label-save-btn',
+    },
   },
 };
-
