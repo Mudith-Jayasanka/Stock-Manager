@@ -33,10 +33,12 @@ export const products: Product[] = [
     cost: 950,
     weightGrams: 240,
     containerTypeId: 'ct-1',
+    fragranceLoad: 10,
     fragrances: [
       { fragranceId: 'fr-1', percentage: 70 },
       { fragranceId: 'fr-2', percentage: 30 },
     ],
+    waxes: [],
     createdAt: '2025-02-01T00:00:00Z',
   },
   {
@@ -46,9 +48,11 @@ export const products: Product[] = [
     cost: 700,
     weightGrams: 120,
     containerTypeId: 'ct-2',
+    fragranceLoad: 8,
     fragrances: [
       { fragranceId: 'fr-3', percentage: 100 },
     ],
+    waxes: [],
     createdAt: '2025-02-05T00:00:00Z',
   },
   {
@@ -58,10 +62,12 @@ export const products: Product[] = [
     cost: 1200,
     weightGrams: 180,
     containerTypeId: 'ct-3',
+    fragranceLoad: 12,
     fragrances: [
       { fragranceId: 'fr-4', percentage: 60 },
       { fragranceId: 'fr-5', percentage: 40 },
     ],
+    waxes: [],
     createdAt: '2025-02-10T00:00:00Z',
   },
 ];
