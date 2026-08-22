@@ -52,6 +52,7 @@
       <thead>
         <tr>
           <th>Name</th>
+          <th>Avg Unit Cost</th>
           <th>Status</th>
           <th>Used In</th>
           <th></th>
@@ -64,6 +65,11 @@
               <span class="material-icons item-icon">inventory_2</span>
               {{ item.name }}
             </div>
+          </td>
+          <td>
+            <span class="unit-cost-label">
+              {{ (item.unitCost ?? 0) > 0 ? ('Rs. ' + (item.unitCost | number:'1.2-4') + ' / unit') : 'No purchases yet' }}
+            </span>
           </td>
           <td>
             <span class="status-badge" [class.delivered]="item.isActive" [class.cancelled]="!item.isActive">
@@ -114,6 +120,7 @@
       <thead>
         <tr>
           <th>Name</th>
+          <th>Avg Unit Cost</th>
           <th>Status</th>
           <th>Used In</th>
           <th></th>
@@ -126,6 +133,11 @@
               <span class="material-icons item-icon">local_florist</span>
               {{ item.name }}
             </div>
+          </td>
+          <td>
+            <span class="unit-cost-label">
+              {{ (item.unitCost ?? 0) > 0 ? ('Rs. ' + (item.unitCost | number:'1.2-4') + ' / ml') : 'No purchases yet' }}
+            </span>
           </td>
           <td>
             <span class="status-badge" [class.delivered]="item.isActive" [class.cancelled]="!item.isActive">
@@ -176,6 +188,7 @@
       <thead>
         <tr>
           <th>Name</th>
+          <th>Avg Unit Cost</th>
           <th>Status</th>
           <th>Used In</th>
           <th></th>
@@ -188,6 +201,11 @@
               <span class="material-icons item-icon">science</span>
               {{ item.name }}
             </div>
+          </td>
+          <td>
+            <span class="unit-cost-label">
+              {{ (item.unitCost ?? 0) > 0 ? ('Rs. ' + (item.unitCost | number:'1.2-4') + ' / g') : 'No purchases yet' }}
+            </span>
           </td>
           <td>
             <span class="status-badge" [class.delivered]="item.isActive" [class.cancelled]="!item.isActive">

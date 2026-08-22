@@ -2,6 +2,7 @@
 export interface ContainerType {
   id: string;
   name: string;
+  unitCost?: number;
   isActive: boolean;
   createdAt: string;
 }
@@ -9,6 +10,7 @@ export interface ContainerType {
 export interface Fragrance {
   id: string;
   name: string;
+  unitCost?: number;
   isActive: boolean;
   createdAt: string;
 }
@@ -16,8 +18,28 @@ export interface Fragrance {
 export interface WaxType {
   id: string;
   name: string;
+  unitCost?: number;
   isActive: boolean;
   createdAt: string;
+}
+
+// ─── Material Purchases ──────────────────────────────────────────────────────
+export type MaterialType = 'wax' | 'fragrance' | 'container';
+export type MaterialUnit = 'g' | 'kg' | 'ml' | 'L' | 'units';
+
+export interface MaterialPurchase {
+  id: string;
+  materialType: MaterialType;
+  materialId: string;
+  materialName?: string;
+  quantity: number;
+  unit: MaterialUnit;
+  baseQuantity: number;
+  totalCost: number;
+  unitCostBase: number;
+  supplier?: string;
+  notes?: string;
+  purchaseDate: string;
 }
 
 // ─── Products ─────────────────────────────────────────────────────────────────
@@ -35,7 +57,9 @@ export interface Product {
   id: string;
   name: string;
   price: number;
-  cost: number;
+  cost: number; // Manual fallback cost
+  bomCost?: number; // Dynamically calculated BOM cost
+  profitMarginPercent?: number; // Profit margin percentage
   weightGrams: number;
   containerTypeId: string;
   fragranceLoad: number;

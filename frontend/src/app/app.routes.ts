@@ -35,6 +35,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/master-data/master-data.component').then(m => m.MasterDataComponent),
   },
   {
+    path: 'purchases',
+    loadComponent: () => import('./pages/purchases/purchases-list.component').then(m => m.PurchasesListComponent),
+  },
+  {
     path: 'labels',
     loadComponent: () => import('./pages/labels/label-list/label-list.component').then(m => m.LabelListComponent),
   },

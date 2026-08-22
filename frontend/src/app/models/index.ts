@@ -2,6 +2,7 @@
 export interface ContainerType {
   id: string;
   name: string;
+  unitCost?: number;
   isActive: boolean;
   createdAt: string;
   usageCount?: number;
@@ -10,6 +11,7 @@ export interface ContainerType {
 export interface Fragrance {
   id: string;
   name: string;
+  unitCost?: number;
   isActive: boolean;
   createdAt: string;
   usageCount?: number;
@@ -18,9 +20,29 @@ export interface Fragrance {
 export interface WaxType {
   id: string;
   name: string;
+  unitCost?: number;
   isActive: boolean;
   createdAt: string;
   usageCount?: number;
+}
+
+// ─── Material Purchases ──────────────────────────────────────────────────────
+export type MaterialType = 'wax' | 'fragrance' | 'container';
+export type MaterialUnit = 'g' | 'kg' | 'ml' | 'L' | 'units';
+
+export interface MaterialPurchase {
+  id: string;
+  materialType: MaterialType;
+  materialId: string;
+  materialName?: string;
+  quantity: number;
+  unit: MaterialUnit;
+  baseQuantity: number;
+  totalCost: number;
+  unitCostBase: number;
+  supplier?: string;
+  notes?: string;
+  purchaseDate: string;
 }
 
 // ─── Products ─────────────────────────────────────────────────────────────────
@@ -28,12 +50,14 @@ export interface FragranceComposition {
   fragranceId: string;
   percentage: number;
   fragranceName?: string;
+  unitCost?: number;
 }
 
 export interface WaxComposition {
   waxTypeId: string;
   percentage: number;
   waxTypeName?: string;
+  unitCost?: number;
 }
 
 export interface Product {
@@ -41,6 +65,8 @@ export interface Product {
   name: string;
   price: number;
   cost: number;
+  bomCost?: number;
+  profitMarginPercent?: number;
   profit?: number;
   weightGrams: number;
   containerTypeId: string;

@@ -5,6 +5,7 @@ import productsRouter from './routes/products';
 import customersRouter from './routes/customers';
 import ordersRouter from './routes/orders';
 import labelTemplatesRouter from './routes/labelTemplates';
+import purchasesRouter from './routes/purchases';
 import { databaseMode } from './config/database';
 
 const app = express();
@@ -20,6 +21,7 @@ app.use('/api/products', productsRouter);
 app.use('/api/customers', customersRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/label-templates', labelTemplatesRouter);
+app.use('/api/purchases', purchasesRouter);
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {

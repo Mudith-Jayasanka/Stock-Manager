@@ -142,6 +142,24 @@ async function setupDb() {
         after_data JSONB,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+
+      ALTER TABLE container_types ADD COLUMN IF NOT EXISTS unit_cost NUMERIC DEFAULT 0;
+      ALTER TABLE fragrances ADD COLUMN IF NOT EXISTS unit_cost NUMERIC DEFAULT 0;
+      ALTER TABLE wax_types ADD COLUMN IF NOT EXISTS unit_cost NUMERIC DEFAULT 0;
+
+      CREATE TABLE IF NOT EXISTS material_purchases (
+        id VARCHAR PRIMARY KEY,
+        material_type VARCHAR NOT NULL,
+        material_id VARCHAR NOT NULL,
+        quantity NUMERIC NOT NULL,
+        unit VARCHAR NOT NULL,
+        base_quantity NUMERIC NOT NULL,
+        total_cost NUMERIC NOT NULL,
+        unit_cost_base NUMERIC NOT NULL,
+        supplier VARCHAR,
+        notes TEXT,
+        purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `);
     
     console.log('Database schema verified (no tables dropped, no data deleted)');

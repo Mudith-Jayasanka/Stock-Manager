@@ -9,7 +9,7 @@ const router = Router();
 // ── Utility: fetch fragrances for a product
 async function fetchFragrances(productId: string) {
   const res = await query(`
-    SELECT pf.fragrance_id, pf.percentage, f.name
+    SELECT pf.fragrance_id, pf.percentage, f.name, f.unit_cost
     FROM product_fragrances pf
     JOIN fragrances f ON pf.fragrance_id = f.id
     WHERE pf.product_id = $1
@@ -18,14 +18,15 @@ async function fetchFragrances(productId: string) {
   return res.rows.map(r => ({
     fragranceId: r.fragrance_id,
     percentage: parseFloat(r.percentage),
-    fragranceName: r.name
+    fragranceName: r.name,
+    unitCost: parseFloat(r.unit_cost || 0)
   }));
 }
 
 // ── Utility: fetch waxes for a product
 async function fetchWaxes(productId: string) {
   const res = await query(`
-    SELECT pw.wax_type_id, pw.percentage, wt.name
+    SELECT pw.wax_type_id, pw.percentage, wt.name, wt.unit_cost
     FROM product_waxes pw
     JOIN wax_types wt ON pw.wax_type_id = wt.id
     WHERE pw.product_id = $1
@@ -34,28 +35,52 @@ async function fetchWaxes(productId: string) {
   return res.rows.map(r => ({
     waxTypeId: r.wax_type_id,
     percentage: parseFloat(r.percentage),
-    waxTypeName: r.name
+    waxTypeName: r.name,
+    unitCost: parseFloat(r.unit_cost || 0)
   }));
 }
 
 // ── Utility: enrich product
 async function enrichProduct(productRow: any) {
-  const ctRes = await query('SELECT name FROM container_types WHERE id = $1', [productRow.container_type_id]);
+  const ctRes = await query('SELECT name, unit_cost FROM container_types WHERE id = $1', [productRow.container_type_id]);
   const containerTypeName = ctRes.rows.length > 0 ? ctRes.rows[0].name : 'Unknown';
+  const containerUnitCost = ctRes.rows.length > 0 ? parseFloat(ctRes.rows[0].unit_cost || 0) : 0;
   
   const fragrances = await fetchFragrances(productRow.id);
   const waxes = await fetchWaxes(productRow.id);
   
+  const weightGrams = parseFloat(productRow.weight_grams || 0);
+  const fragranceLoad = parseFloat(productRow.fragrance_load || 0);
+
+  const fragranceWeight = weightGrams * (fragranceLoad / 100);
+  const waxWeight = weightGrams * (1 - fragranceLoad / 100);
+
+  const weightedFragranceUnitCost = fragrances.reduce((sum, f) => sum + ((f.percentage / 100) * f.unitCost), 0);
+  const weightedWaxUnitCost = waxes.reduce((sum, w) => sum + ((w.percentage / 100) * w.unitCost), 0);
+
+  const fragranceCost = fragranceWeight * weightedFragranceUnitCost;
+  const waxCost = waxWeight * weightedWaxUnitCost;
+
+  const rawBomCost = fragranceCost + waxCost + containerUnitCost;
+  const bomCost = rawBomCost > 0 ? Math.round(rawBomCost * 100) / 100 : parseFloat(productRow.cost || 0);
+  
+  const price = parseFloat(productRow.price || 0);
+  const effectiveCost = bomCost > 0 ? bomCost : parseFloat(productRow.cost || 0);
+  const profit = price - effectiveCost;
+  const profitMarginPercent = price > 0 ? Math.round((profit / price) * 1000) / 10 : 0;
+
   return {
     id: productRow.id,
     name: productRow.name,
     price: productRow.price,
-    cost: productRow.cost,
+    cost: productRow.cost, // static fallback
+    bomCost, // dynamic calculated BOM cost
+    profitMarginPercent,
     weightGrams: productRow.weight_grams,
     containerTypeId: productRow.container_type_id,
-    fragranceLoad: parseFloat(productRow.fragrance_load || 0),
+    fragranceLoad,
     createdAt: productRow.created_at.toISOString(),
-    profit: productRow.price - productRow.cost,
+    profit,
     containerTypeName,
     fragrances,
     waxes

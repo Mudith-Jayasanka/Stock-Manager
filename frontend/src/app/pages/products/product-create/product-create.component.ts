@@ -181,12 +181,59 @@ export class ProductCreateComponent implements OnInit {
     return this.weightGrams - this.waxWeight;
   }
 
+  // ── Live BOM Cost Calculation Preview ──────────────────────────────────────
+  get estimatedContainerCost(): number {
+    if (!this.selectedContainerTypeId) return 0;
+    const c = this.containerTypes.find(ct => ct.id === this.selectedContainerTypeId);
+    return c?.unitCost ?? 0;
+  }
+
+  get estimatedWaxCost(): number {
+    if (!this.weightGrams || this.waxComposition.length === 0) return 0;
+    const wWeight = this.waxWeight;
+    const weightedUnitCost = this.waxComposition.reduce((sum, w) => {
+      const masterWax = this.availableWaxes.find(aw => aw.id === w.waxTypeId);
+      const unitCost = masterWax?.unitCost ?? 0;
+      return sum + ((w.percentage / 100) * unitCost);
+    }, 0);
+    return wWeight * weightedUnitCost;
+  }
+
+  get estimatedFragranceCost(): number {
+    if (!this.weightGrams || this.fragranceComposition.length === 0) return 0;
+    const fWeight = this.fragranceWeight;
+    const weightedUnitCost = this.fragranceComposition.reduce((sum, f) => {
+      const masterFrag = this.availableFragrances.find(af => af.id === f.fragranceId);
+      const unitCost = masterFrag?.unitCost ?? 0;
+      return sum + ((f.percentage / 100) * unitCost);
+    }, 0);
+    return fWeight * weightedUnitCost;
+  }
+
+  get estimatedBomCost(): number {
+    const total = this.estimatedWaxCost + this.estimatedFragranceCost + this.estimatedContainerCost;
+    return total > 0 ? Math.round(total * 100) / 100 : 0;
+  }
+
+  get effectiveCost(): number {
+    return this.estimatedBomCost > 0 ? this.estimatedBomCost : (this.cost || 0);
+  }
+
+  get estimatedProfit(): number {
+    if (!this.price) return 0;
+    return this.price - this.effectiveCost;
+  }
+
+  get estimatedMarginPercent(): number {
+    if (!this.price || this.price <= 0) return 0;
+    return Math.round((this.estimatedProfit / this.price) * 1000) / 10;
+  }
+
   // ── Form Actions ──────────────────────────────────────────────────────────
   get isFormValid(): boolean {
     return !!(
       this.name.trim() &&
       this.price !== null && this.price > 0 &&
-      this.cost !== null && this.cost > 0 &&
       this.weightGrams !== null && this.weightGrams > 0 &&
       this.selectedContainerTypeId &&
       this.fragranceComposition.length > 0 &&
@@ -203,7 +250,7 @@ export class ProductCreateComponent implements OnInit {
     const payload = {
       name: this.name.trim(),
       price: this.price!,
-      cost: this.cost!,
+      cost: this.cost ?? (this.estimatedBomCost > 0 ? Math.round(this.estimatedBomCost) : 0),
       weightGrams: this.weightGrams!,
       containerTypeId: this.selectedContainerTypeId,
       fragranceLoad: this.fragranceLoad,

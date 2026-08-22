@@ -53,11 +53,19 @@
         <td>{{ p.containerTypeName }}</td>
         <td>{{ p.weightGrams }}g</td>
         <td class="price-cell">{{ formatPrice(p.price) }}</td>
-        <td class="cost-cell">{{ formatPrice(p.cost) }}</td>
+        <td class="cost-cell">
+          {{ formatPrice(p.bomCost || p.cost) }}
+          <span *ngIf="p.bomCost" class="bom-tag">BOM</span>
+        </td>
         <td>
-          <span class="profit-badge" [class.positive]="(p.profit ?? 0) > 0">
-            {{ formatPrice(p.profit ?? (p.price - p.cost)) }}
-          </span>
+          <div class="profit-container">
+            <span class="profit-badge" [class.positive]="(p.profit ?? 0) > 0">
+              {{ formatPrice(p.profit ?? (p.price - (p.bomCost || p.cost))) }}
+            </span>
+            <span *ngIf="p.profitMarginPercent !== undefined" class="margin-percent">
+              {{ p.profitMarginPercent }}% margin
+            </span>
+          </div>
         </td>
         <td>
           <div class="fragrance-pills">

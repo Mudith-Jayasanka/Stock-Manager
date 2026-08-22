@@ -19,6 +19,7 @@ router.get('/container-types', async (_req: Request, res: Response) => {
     const mapped = result.rows.map(row => ({
       id: row.id,
       name: row.name,
+      unitCost: parseFloat(row.unit_cost || 0),
       isActive: row.is_active,
       createdAt: row.created_at.toISOString(),
       usageCount: parseInt(row.usage_count, 10)
@@ -92,6 +93,7 @@ router.get('/fragrances', async (_req: Request, res: Response) => {
     const mapped = result.rows.map(row => ({
       id: row.id,
       name: row.name,
+      unitCost: parseFloat(row.unit_cost || 0),
       isActive: row.is_active,
       createdAt: row.created_at.toISOString(),
       usageCount: parseInt(row.usage_count, 10)
@@ -119,6 +121,7 @@ router.post('/fragrances', async (req: Request, res: Response) => {
     res.status(201).json({
       id: row.id,
       name: row.name,
+      unitCost: parseFloat(row.unit_cost || 0),
       isActive: row.is_active,
       createdAt: row.created_at.toISOString()
     });
@@ -164,6 +167,7 @@ router.get('/wax-types', async (_req: Request, res: Response) => {
     const mapped = result.rows.map(row => ({
       id: row.id,
       name: row.name,
+      unitCost: parseFloat(row.unit_cost || 0),
       isActive: row.is_active,
       createdAt: row.created_at.toISOString(),
       usageCount: parseInt(row.usage_count, 10)

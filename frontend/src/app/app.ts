@@ -60,6 +60,12 @@ interface HealthResponse {
             </a>
           </li>
           <li>
+            <a routerLink="/purchases" routerLinkActive="active" (click)="sidebarOpen = false">
+              <span class="material-icons">shopping_bag</span>
+              Purchases
+            </a>
+          </li>
+          <li>
             <a routerLink="/labels" routerLinkActive="active" (click)="sidebarOpen = false">
               <span class="material-icons">dashboard_customize</span>
               Labels
@@ -90,13 +96,13 @@ interface HealthResponse {
           <span class="material-icons">receipt_long</span>
           <span>Orders</span>
         </a>
-        <a routerLink="/customers" routerLinkActive="active">
-          <span class="material-icons">people</span>
-          <span>Customers</span>
-        </a>
         <a routerLink="/products" routerLinkActive="active">
           <span class="material-icons">inventory_2</span>
           <span>Products</span>
+        </a>
+        <a routerLink="/purchases" routerLinkActive="active">
+          <span class="material-icons">shopping_bag</span>
+          <span>Purchases</span>
         </a>
         <a routerLink="/labels" routerLinkActive="active">
           <span class="material-icons">dashboard_customize</span>
