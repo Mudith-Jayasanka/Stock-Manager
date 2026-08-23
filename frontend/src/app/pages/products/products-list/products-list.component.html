@@ -83,7 +83,7 @@
           </div>
         </td>
         <td>
-          <div class="fragrance-pills" [ngClass]="'grid-' + (p.fragrances?.length === 1 ? 1 : 2)">
+          <div class="fragrance-pills" [ngClass]="'grid-' + (p.fragrances.length === 1 ? 1 : 2)">
             <span *ngFor="let f of p.fragrances" class="frag-pill">
               {{ f.fragranceName || f.fragranceId }} ({{ f.percentage }}%)
             </span>
