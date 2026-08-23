@@ -141,7 +141,29 @@
   font-weight: 500;
 }
 
-.fragrance-pills { display: flex; flex-wrap: wrap; gap: 4px; }
+.card {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    white-space: nowrap;
+  }
+}
+
+.fragrance-pills {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(1, max-content);
+
+  &.grid-2 {
+    grid-template-columns: repeat(2, max-content);
+  }
+}
 
 .frag-pill {
   display: inline-block;
