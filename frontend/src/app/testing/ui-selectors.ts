@@ -47,6 +47,9 @@ export const UI_SELECTORS = {
   PURCHASES: {
     RECORD_BTN: 'purchases-record-btn',
     EMPTY_RECORD_BTN: 'purchases-empty-record-btn',
+    CATEGORY_WAX_BTN: 'purchase-category-wax-btn',
+    CATEGORY_FRAGRANCE_BTN: 'purchase-category-fragrance-btn',
+    CATEGORY_CONTAINER_BTN: 'purchase-category-container-btn',
     MATERIAL_TYPE_SELECT: 'purchase-material-type-select',
     MATERIAL_ID_SELECT: 'purchase-material-id-select',
     QUANTITY_INPUT: 'purchase-quantity-input',
@@ -116,11 +119,11 @@ export const UI_SELECTORS = {
       CANCEL_MODAL_CONFIRM_BTN: 'order-cancel-modal-confirm-btn',
     },
     CREATE: {
-      CUSTOMER_SELECT: 'order-customer-select',
       CUSTOMER_PHONE_INPUT: 'order-customer-phone-input',
       CUSTOMER_NAME_INPUT: 'order-customer-name-input',
       CUSTOMER_EMAIL_INPUT: 'order-customer-email-input',
       CUSTOMER_ADDRESS_INPUT: 'order-customer-address-input',
+      CUSTOMER_SELECT: 'order-customer-select',
       CUSTOMER_STATUS_BADGE: 'order-customer-status-badge',
       PRODUCT_SELECT: 'order-product-select',
       QUANTITY_INPUT: 'order-quantity-input',

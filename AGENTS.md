@@ -41,7 +41,9 @@ When the user requests a new feature, enhancement, or bugfix:
      2. 1st-Tier Dependents: Purchases & Products Catalog (ingredients)
      3. 2nd-Tier Dependents: Orders & Labels
 3. **Angular Form Event Triggers**:
-   - Test scripts MUST dispatch `input`/`change`/`Enter` events on inputs to trigger Angular `[(ngModel)]` change detection so conditional submit buttons (`[disabled]="!isFormValid"`) enable immediately.
+   - Test scripts MUST dispatch `input`, `change`, and `blur` events on inputs to trigger Angular `[(ngModel)]` change detection so conditional submit buttons (`[disabled]="!isFormValid"`) enable immediately.
+4. **Angular SPA Route Assertions**:
+   - Test scripts MUST use `await expect(page).toHaveURL(/\/exact-path$/)` with strict end-of-string regex matching (e.g. `/\/orders$/`, `/\/labels$/`, `/\/labels\/create$/`) instead of `page.waitForURL(...)`. Web-first URL assertions poll Angular SPA route transitions dynamically without hanging on missing browser document `load` events.
 
 ---
 

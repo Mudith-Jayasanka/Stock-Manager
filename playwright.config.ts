@@ -12,9 +12,25 @@ export default defineConfig({
     trace: 'on-first-retry',
     viewport: { width: 1280, height: 720 },
     launchOptions: {
-      slowMo: 600,
+      slowMo: 300,
     },
   },
+  webServer: [
+    {
+      command: 'npm run dev:devdb',
+      cwd: './backend',
+      url: 'http://127.0.0.1:3000/api/health',
+      reuseExistingServer: true,
+      timeout: 120000,
+    },
+    {
+      command: 'npm run start',
+      cwd: './frontend',
+      url: 'http://127.0.0.1:4200',
+      reuseExistingServer: true,
+      timeout: 120000,
+    },
+  ],
   projects: [
     {
       name: 'chromium',

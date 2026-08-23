@@ -96,7 +96,7 @@
 
         <!-- Order Total -->
         <div class="order-summary" *ngIf="orderItems.length > 0">
-          <div class="summary-row total">
+          <div class="summary-row total" data-testid="order-total-price">
             <span>Total Amount</span>
             <span data-testid="order-total-price">Rs. {{ orderTotal | number }}</span>
           </div>
