@@ -22,3 +22,5 @@ This directory contains markdown specifications for all features and bugfixes de
 | `FEAT-004` | Comprehensive 19-Step Frontend Playwright E2E Test Suite | Feature | Planned | `feat/FEAT-004` | 2026-08-22 |
 | `FEAT-005` | Standardized data-testid UI Tagging & Registry Expansion | Feature | Completed | `feat/FEAT-005` | 2026-08-22 |
 | `BUG-001` | Profit badge text wrapping fix | Bugfix | Completed | `fix/BUG-001` | 2026-08-22 |
+| `BUG-002` | Restore missing "+ Add Customer" button and modal | Bugfix | Completed | `fix/BUG-002` | 2026-08-23 |
+| `BUG-003` | Reorganize Record Material Purchase modal layout | Bugfix | Completed | `fix/BUG-003` | 2026-08-23 |

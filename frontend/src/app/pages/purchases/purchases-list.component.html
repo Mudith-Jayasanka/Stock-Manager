@@ -109,7 +109,7 @@
       <form (ngSubmit)="submitPurchase()" #purchaseForm="ngForm">
         <div class="modal-body">
           
-          <!-- Material Category Toggle -->
+          <!-- Row 1: Material Category Toggle -->
           <div class="form-group">
             <label>Material Category *</label>
             <div class="category-toggle">
@@ -134,17 +134,24 @@
             </div>
           </div>
 
-          <!-- Select Material -->
-          <div class="form-group">
-            <label>Select Material *</label>
-            <select [(ngModel)]="formMaterialId" name="materialId" required class="form-control" data-testid="purchase-material-id-select">
-              <option value="" disabled>-- Select {{ formMaterialType | titlecase }} --</option>
-              <option *ngFor="let m of availableMaterials" [value]="m.id">{{ m.name }}</option>
-            </select>
+          <!-- Row 2: Select Material & Total Cost -->
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label>Select Material *</label>
+              <select [(ngModel)]="formMaterialId" name="materialId" required class="form-control" data-testid="purchase-material-id-select">
+                <option value="" disabled>-- Select {{ formMaterialType | titlecase }} --</option>
+                <option *ngFor="let m of availableMaterials" [value]="m.id">{{ m.name }}</option>
+              </select>
+            </div>
+
+            <div class="form-group flex-1">
+              <label>Total Purchase Cost (Rs.) *</label>
+              <input type="number" [(ngModel)]="formTotalCost" name="totalCost" min="1" step="any" required placeholder="e.g. 7500" class="form-control" data-testid="purchase-total-cost-input" />
+            </div>
           </div>
 
-          <!-- Qty and Unit row -->
-          <div class="form-row">
+          <!-- Row 3: Quantity, Unit & Unit Cost Preview -->
+          <div class="form-row align-items-end">
             <div class="form-group flex-1">
               <label>Quantity Purchased *</label>
               <input type="number" [(ngModel)]="formQuantity" name="quantity" min="0.01" step="any" required placeholder="e.g. 5" class="form-control" data-testid="purchase-quantity-input" />
@@ -168,32 +175,29 @@
                 </ng-container>
               </select>
             </div>
-          </div>
 
-          <!-- Total Cost -->
-          <div class="form-group">
-            <label>Total Purchase Cost (Rs.) *</label>
-            <input type="number" [(ngModel)]="formTotalCost" name="totalCost" min="1" step="any" required placeholder="e.g. 7500" class="form-control" data-testid="purchase-total-cost-input" />
-          </div>
-
-          <!-- Unit Cost Preview Box -->
-          <div *ngIf="calculatedBaseUnitCost > 0" class="unit-cost-preview">
-            <span class="material-icons">calculate</span>
-            <div>
-              <div class="preview-title">Calculated Unit Cost</div>
-              <div class="preview-value">Rs. {{ calculatedBaseUnitCost | number:'1.2-4' }} {{ baseUnitLabel }}</div>
+            <div class="form-group flex-1-2" *ngIf="calculatedBaseUnitCost > 0">
+              <div class="unit-cost-preview compact-preview">
+                <span class="material-icons icon-sm">calculate</span>
+                <div>
+                  <div class="preview-title">Calculated Unit Cost</div>
+                  <div class="preview-value">Rs. {{ calculatedBaseUnitCost | number:'1.2-4' }} {{ baseUnitLabel }}</div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Supplier & Notes -->
-          <div class="form-group">
-            <label>Supplier Name (Optional)</label>
-            <input type="text" [(ngModel)]="formSupplier" name="supplier" placeholder="e.g. CandleSupplies Ltd." class="form-control" data-testid="purchase-supplier-input" />
-          </div>
+          <!-- Row 4: Supplier & Notes -->
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label>Supplier Name (Optional)</label>
+              <input type="text" [(ngModel)]="formSupplier" name="supplier" placeholder="e.g. CandleSupplies Ltd." class="form-control" data-testid="purchase-supplier-input" />
+            </div>
 
-          <div class="form-group">
-            <label>Notes / Batch Info (Optional)</label>
-            <textarea [(ngModel)]="formNotes" name="notes" rows="2" placeholder="e.g. 10% volume discount applied" class="form-control" data-testid="purchase-notes-input"></textarea>
+            <div class="form-group flex-1">
+              <label>Notes / Batch Info (Optional)</label>
+              <input type="text" [(ngModel)]="formNotes" name="notes" placeholder="e.g. 10% volume discount applied" class="form-control" data-testid="purchase-notes-input" />
+            </div>
           </div>
 
         </div>
