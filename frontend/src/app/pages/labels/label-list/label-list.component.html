@@ -3,7 +3,7 @@
     <h1>Label Templates</h1>
     <p>Design and manage your label templates</p>
   </div>
-  <a routerLink="/labels/create" class="btn btn-primary">
+  <a routerLink="/labels/create" class="btn btn-primary" data-testid="labels-create-btn">
     <span class="material-icons">add</span> New Template
   </a>
 </div>
@@ -19,7 +19,7 @@
     <p>No label templates found</p>
   </div>
 
-  <table *ngIf="!loading && templates.length > 0" class="data-table">
+  <table *ngIf="!loading && templates.length > 0" class="data-table" data-testid="labels-table">
     <thead>
       <tr>
         <th>Template Name</th>

@@ -45,6 +45,10 @@ export const UI_SELECTORS = {
     },
   },
   PURCHASES: {
+    RECORD_BTN: 'purchases-record-btn',
+    CATEGORY_WAX_BTN: 'purchase-category-wax-btn',
+    CATEGORY_FRAGRANCE_BTN: 'purchase-category-fragrance-btn',
+    CATEGORY_CONTAINER_BTN: 'purchase-category-container-btn',
     MATERIAL_TYPE_SELECT: 'purchase-material-type-select',
     MATERIAL_ID_SELECT: 'purchase-material-id-select',
     QUANTITY_INPUT: 'purchase-quantity-input',
@@ -95,6 +99,10 @@ export const UI_SELECTORS = {
       STATUS_BADGE: (id: string) => `order-status-${id}`,
     },
     CREATE: {
+      CUSTOMER_PHONE_INPUT: 'order-customer-phone-input',
+      CUSTOMER_NAME_INPUT: 'order-customer-name-input',
+      CUSTOMER_EMAIL_INPUT: 'order-customer-email-input',
+      CUSTOMER_ADDRESS_INPUT: 'order-customer-address-input',
       CUSTOMER_SELECT: 'order-customer-select',
       PRODUCT_SELECT: 'order-product-select',
       QUANTITY_INPUT: 'order-quantity-input',
@@ -123,6 +131,7 @@ export const UI_SELECTORS = {
       ADD_TEXT_BTN: 'label-add-text-btn',
       PLACEHOLDER_SELECT: 'label-placeholder-select',
       SAVE_BTN: 'label-save-btn',
+      CANCEL_BTN: 'label-cancel-btn',
     },
   },
 };

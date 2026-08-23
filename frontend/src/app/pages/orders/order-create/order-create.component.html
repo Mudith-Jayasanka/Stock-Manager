@@ -27,24 +27,24 @@
             <span class="material-icons search-icon" *ngIf="!searchingCustomer">search</span>
             <span class="material-icons spinner" *ngIf="searchingCustomer">sync</span>
             <input type="text" [(ngModel)]="customerPhone" name="phone" (input)="onPhoneChange()" 
-                   placeholder="e.g. 0771234567" required autocomplete="off">
+                   placeholder="e.g. 0771234567" required autocomplete="off" data-testid="order-customer-phone-input">
           </div>
           <small class="hint">Enter phone number to automatically look up existing customers.</small>
         </div>
 
         <div class="form-group">
           <label>Full Name *</label>
-          <input type="text" [(ngModel)]="customerFullName" name="fullName" placeholder="e.g. Nimal Silva" required>
+          <input type="text" [(ngModel)]="customerFullName" name="fullName" placeholder="e.g. Nimal Silva" required data-testid="order-customer-name-input">
         </div>
 
         <div class="form-group">
           <label>Email Address</label>
-          <input type="email" [(ngModel)]="customerEmail" name="email" placeholder="e.g. nimal@example.com">
+          <input type="email" [(ngModel)]="customerEmail" name="email" placeholder="e.g. nimal@example.com" data-testid="order-customer-email-input">
         </div>
 
         <div class="form-group">
           <label>Delivery Address *</label>
-          <textarea [(ngModel)]="customerAddress" name="address" rows="3" placeholder="Enter full delivery address" required></textarea>
+          <textarea [(ngModel)]="customerAddress" name="address" rows="3" placeholder="Enter full delivery address" required data-testid="order-customer-address-input"></textarea>
         </div>
       </div>
     </div>
@@ -56,11 +56,11 @@
 
         <!-- Product Picker -->
         <div class="product-picker">
-          <select [(ngModel)]="selectedProductId" name="productPicker">
+          <select [(ngModel)]="selectedProductId" name="productPicker" data-testid="order-product-select">
             <option value="">Select a product to add…</option>
             <option *ngFor="let p of availableProducts" [value]="p.id">{{ p.name }} (Rs. {{ p.price | number }})</option>
           </select>
-          <button type="button" class="btn btn-primary" (click)="addProduct()" [disabled]="!selectedProductId">
+          <button type="button" class="btn btn-primary" (click)="addProduct()" [disabled]="!selectedProductId" data-testid="order-add-item-btn">
             <span class="material-icons">add</span> Add
           </button>
         </div>
@@ -96,7 +96,7 @@
 
         <!-- Order Total -->
         <div class="order-summary" *ngIf="orderItems.length > 0">
-          <div class="summary-row total">
+          <div class="summary-row total" data-testid="order-total-price">
             <span>Total Amount</span>
             <span>Rs. {{ orderTotal | number }}</span>
           </div>
@@ -109,8 +109,8 @@
 
   <!-- ─── Save Button ─────────────────────────────────────────────────────── -->
   <div class="form-actions">
-    <a routerLink="/orders" class="btn btn-ghost">Cancel</a>
-    <button type="submit" class="btn btn-primary" [disabled]="!isFormValid || saving">
+    <a routerLink="/orders" class="btn btn-ghost" data-testid="order-cancel-btn">Cancel</a>
+    <button type="submit" class="btn btn-primary" [disabled]="!isFormValid || saving" data-testid="order-save-btn">
       <span class="material-icons">{{ saving ? 'hourglass_empty' : 'check_circle' }}</span>
       {{ saving ? 'Creating…' : 'Create Order' }}
     </button>

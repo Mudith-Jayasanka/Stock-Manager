@@ -34,7 +34,7 @@ app.use((_req, res) => {
 });
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🚀  Backend running at http://localhost:${PORT}`);
   console.log(`   Health: http://localhost:${PORT}/api/health`);
   console.log(`   Using: PostgreSQL database (Neon)`);

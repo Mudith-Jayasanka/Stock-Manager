@@ -9,7 +9,7 @@
 <div class="toolbar card">
   <div class="search-box">
     <span class="material-icons">search</span>
-    <input type="text" placeholder="Search by name, phone, email, or address…" [(ngModel)]="searchQuery" (input)="onSearch()">
+    <input type="text" placeholder="Search by name, phone, email, or address…" [(ngModel)]="searchQuery" (input)="onSearch()" data-testid="customers-search-input">
   </div>
 </div>
 
@@ -22,7 +22,7 @@
     <span class="material-icons">people</span><p>No customers found</p>
   </div>
 
-  <table *ngIf="!loading && filteredCustomers.length > 0" class="data-table">
+  <table *ngIf="!loading && filteredCustomers.length > 0" class="data-table" data-testid="customers-table">
     <thead>
       <tr>
         <th>Name</th>
@@ -34,20 +34,20 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let c of pagedCustomers">
+      <tr *ngFor="let c of pagedCustomers" [attr.data-testid]="'customer-row-' + c.id">
         <td>
-          <span class="customer-name">{{ c.fullName }}</span>
+          <span class="customer-name" [attr.data-testid]="'customer-name-' + c.id">{{ c.fullName }}</span>
         </td>
-        <td>{{ c.phone }}</td>
+        <td [attr.data-testid]="'customer-phone-' + c.id">{{ c.phone }}</td>
         <td>{{ c.email || 'N/A' }}</td>
         <td class="address-cell">{{ c.address }}</td>
         <td>{{ c.createdAt | date:'MMM d, y' }}</td>
         <td>
           <div class="row-actions">
-            <button class="icon-btn" title="Edit customer" (click)="openEdit(c)">
+            <button class="icon-btn" title="Edit customer" (click)="openEdit(c)" [attr.data-testid]="'customer-edit-btn-' + c.id">
               <span class="material-icons">edit</span>
             </button>
-            <button class="icon-btn danger" title="Delete customer" (click)="openDelete(c)">
+            <button class="icon-btn danger" title="Delete customer" (click)="openDelete(c)" [attr.data-testid]="'customer-delete-btn-' + c.id">
               <span class="material-icons">delete</span>
             </button>
           </div>
@@ -87,27 +87,27 @@
 
       <div class="form-group">
         <label>Full Name</label>
-        <input type="text" [(ngModel)]="editForm.fullName">
+        <input type="text" [(ngModel)]="editForm.fullName" data-testid="customer-edit-name-input">
       </div>
 
       <div class="form-group">
         <label>Phone</label>
-        <input type="text" [(ngModel)]="editForm.phone">
+        <input type="text" [(ngModel)]="editForm.phone" data-testid="customer-edit-phone-input">
       </div>
 
       <div class="form-group">
         <label>Email</label>
-        <input type="email" [(ngModel)]="editForm.email">
+        <input type="email" [(ngModel)]="editForm.email" data-testid="customer-edit-email-input">
       </div>
 
       <div class="form-group">
         <label>Address</label>
-        <textarea rows="3" [(ngModel)]="editForm.address"></textarea>
+        <textarea rows="3" [(ngModel)]="editForm.address" data-testid="customer-edit-address-input"></textarea>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" (click)="closeEdit()" [disabled]="saving">Cancel</button>
-      <button class="btn btn-primary" (click)="saveCustomer()" [disabled]="saving || !editForm.fullName.trim() || !editForm.phone.trim()">
+      <button class="btn btn-ghost" (click)="closeEdit()" [disabled]="saving" data-testid="customer-edit-cancel-btn">Cancel</button>
+      <button class="btn btn-primary" (click)="saveCustomer()" [disabled]="saving || !editForm.fullName.trim() || !editForm.phone.trim()" data-testid="customer-edit-save-btn">
         Save
       </button>
     </div>
@@ -130,8 +130,8 @@
       </p>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" (click)="closeDelete()" [disabled]="saving">Cancel</button>
-      <button class="btn btn-danger" (click)="confirmDelete()" [disabled]="saving">Delete</button>
+      <button class="btn btn-ghost" (click)="closeDelete()" [disabled]="saving" data-testid="customer-delete-cancel-btn">Cancel</button>
+      <button class="btn btn-danger" (click)="confirmDelete()" [disabled]="saving" data-testid="customer-delete-confirm-btn">Delete</button>
     </div>
   </div>
 </div>

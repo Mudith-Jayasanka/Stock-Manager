@@ -23,7 +23,7 @@
         <span *ngIf="selectedCount > 0" class="selection-badge">{{ selectedCount }} selected</span>
       </div>
       <div class="toolbar-right">
-        <select [(ngModel)]="selectedStatus" (change)="onStatusFilterChange()" class="status-filter" [title]="getSelectedFilterTitle() || ''">
+        <select [(ngModel)]="selectedStatus" (change)="onStatusFilterChange()" class="status-filter" [title]="getSelectedFilterTitle() || ''" data-testid="orders-status-filter">
           <option *ngFor="let s of filters" [value]="s.value" [title]="s.title || ''">{{ s.label }}</option>
         </select>
       </div>
@@ -41,7 +41,7 @@
         <p>No orders found</p>
       </div>
 
-      <table *ngIf="!loading && orders.length > 0" class="data-table">
+      <table *ngIf="!loading && orders.length > 0" class="data-table" data-testid="orders-table">
         <thead>
           <tr>
             <th style="width:40px"></th>

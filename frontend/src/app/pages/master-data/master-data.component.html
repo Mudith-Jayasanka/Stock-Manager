@@ -104,6 +104,7 @@
         [(ngModel)]="newFragranceName"
         placeholder="e.g. Jasmine & Sandalwood"
         (keyup.enter)="addFragrance()"
+        data-testid="master-data-name-input"
       />
       <button class="btn btn-primary" (click)="addFragrance()" [disabled]="!newFragranceName.trim()" data-testid="master-data-add-btn">
         <span class="material-icons">add</span> Add
@@ -172,6 +173,7 @@
         [(ngModel)]="newWaxName"
         placeholder="e.g. Soy Wax (C3)"
         (keyup.enter)="addWaxType()"
+        data-testid="master-data-name-input"
       />
       <button class="btn btn-primary" (click)="addWaxType()" [disabled]="!newWaxName.trim()" data-testid="master-data-add-btn">
         <span class="material-icons">add</span> Add
