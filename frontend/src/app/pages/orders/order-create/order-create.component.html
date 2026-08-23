@@ -16,7 +16,7 @@
       <div class="card form-card">
         <div class="card-header">
           <h2>Customer Details</h2>
-          <span class="status-badge" [class.delivered]="isExistingCustomer" [class.pending]="!isExistingCustomer && customerPhone.length > 5">
+          <span class="status-badge" [class.delivered]="isExistingCustomer" [class.pending]="!isExistingCustomer && customerPhone.length > 5" data-testid="order-customer-status-badge">
             {{ isExistingCustomer ? 'Existing Customer' : (customerPhone.length > 5 ? 'New Customer' : 'Enter Phone') }}
           </span>
         </div>
@@ -27,24 +27,24 @@
             <span class="material-icons search-icon" *ngIf="!searchingCustomer">search</span>
             <span class="material-icons spinner" *ngIf="searchingCustomer">sync</span>
             <input type="text" [(ngModel)]="customerPhone" name="phone" (input)="onPhoneChange()" 
-                   placeholder="e.g. 0771234567" required autocomplete="off">
+                   placeholder="e.g. 0771234567" required autocomplete="off" data-testid="order-customer-phone-input">
           </div>
           <small class="hint">Enter phone number to automatically look up existing customers.</small>
         </div>
 
         <div class="form-group">
           <label>Full Name *</label>
-          <input type="text" [(ngModel)]="customerFullName" name="fullName" placeholder="e.g. Nimal Silva" required>
+          <input type="text" [(ngModel)]="customerFullName" name="fullName" placeholder="e.g. Nimal Silva" required data-testid="order-customer-name-input">
         </div>
 
         <div class="form-group">
           <label>Email Address</label>
-          <input type="email" [(ngModel)]="customerEmail" name="email" placeholder="e.g. nimal@example.com">
+          <input type="email" [(ngModel)]="customerEmail" name="email" placeholder="e.g. nimal@example.com" data-testid="order-customer-email-input">
         </div>
 
         <div class="form-group">
           <label>Delivery Address *</label>
-          <textarea [(ngModel)]="customerAddress" name="address" rows="3" placeholder="Enter full delivery address" required></textarea>
+          <textarea [(ngModel)]="customerAddress" name="address" rows="3" placeholder="Enter full delivery address" required data-testid="order-customer-address-input"></textarea>
         </div>
       </div>
     </div>
@@ -56,11 +56,11 @@
 
         <!-- Product Picker -->
         <div class="product-picker">
-          <select [(ngModel)]="selectedProductId" name="productPicker">
+          <select [(ngModel)]="selectedProductId" name="productPicker" data-testid="order-product-select">
             <option value="">Select a product to add…</option>
             <option *ngFor="let p of availableProducts" [value]="p.id">{{ p.name }} (Rs. {{ p.price | number }})</option>
           </select>
-          <button type="button" class="btn btn-primary" (click)="addProduct()" [disabled]="!selectedProductId">
+          <button type="button" class="btn btn-primary" (click)="addProduct()" [disabled]="!selectedProductId" data-testid="order-add-item-btn">
             <span class="material-icons">add</span> Add
           </button>
         </div>
@@ -75,14 +75,14 @@
             
             <div class="item-controls">
               <div class="qty-control">
-                <button type="button" (click)="item.quantity = Math.max(1, item.quantity - 1)">-</button>
-                <input type="number" [(ngModel)]="item.quantity" [name]="'qty_' + i" min="1">
-                <button type="button" (click)="item.quantity = item.quantity + 1">+</button>
+                <button type="button" (click)="item.quantity = Math.max(1, item.quantity - 1)" [attr.data-testid]="'order-qty-minus-' + i">-</button>
+                <input type="number" [(ngModel)]="item.quantity" [name]="'qty_' + i" min="1" data-testid="order-quantity-input" [attr.data-testid]="'order-qty-input-' + i">
+                <button type="button" (click)="item.quantity = item.quantity + 1" [attr.data-testid]="'order-qty-plus-' + i">+</button>
               </div>
               <div class="item-total">
                 Rs. {{ (item.product.price * item.quantity) | number }}
               </div>
-              <button type="button" class="btn btn-danger" style="padding: 5px 8px;" (click)="removeItem(i)">
+              <button type="button" class="btn btn-danger" style="padding: 5px 8px;" (click)="removeItem(i)" [attr.data-testid]="'order-remove-item-' + i">
                 <span class="material-icons" style="font-size:14px">close</span>
               </button>
             </div>
@@ -98,7 +98,7 @@
         <div class="order-summary" *ngIf="orderItems.length > 0">
           <div class="summary-row total">
             <span>Total Amount</span>
-            <span>Rs. {{ orderTotal | number }}</span>
+            <span data-testid="order-total-price">Rs. {{ orderTotal | number }}</span>
           </div>
         </div>
         
@@ -109,8 +109,8 @@
 
   <!-- ─── Save Button ─────────────────────────────────────────────────────── -->
   <div class="form-actions">
-    <a routerLink="/orders" class="btn btn-ghost">Cancel</a>
-    <button type="submit" class="btn btn-primary" [disabled]="!isFormValid || saving">
+    <a routerLink="/orders" class="btn btn-ghost" data-testid="order-cancel-btn">Cancel</a>
+    <button type="submit" class="btn btn-primary" [disabled]="!isFormValid || saving" data-testid="order-save-btn">
       <span class="material-icons">{{ saving ? 'hourglass_empty' : 'check_circle' }}</span>
       {{ saving ? 'Creating…' : 'Create Order' }}
     </button>

@@ -3,8 +3,8 @@
     <h1>{{ templateId === 'create' ? 'Create' : 'Edit' }} Template</h1>
   </div>
   <div style="display: flex; gap: 12px;">
-    <a routerLink="/labels" class="btn btn-ghost">Cancel</a>
-    <button class="btn btn-primary" (click)="saveTemplate()" [disabled]="!name.trim() || saving">
+    <a routerLink="/labels" class="btn btn-ghost" data-testid="label-cancel-btn">Cancel</a>
+    <button class="btn btn-primary" (click)="saveTemplate()" [disabled]="!name.trim() || saving" data-testid="label-save-btn">
       <span class="material-icons">{{ saving ? 'hourglass_empty' : 'save' }}</span>
       {{ saving ? 'Saving…' : 'Save Template' }}
     </button>
@@ -19,16 +19,16 @@
       <h3>Template Settings</h3>
       <div class="form-group">
         <label>Name</label>
-        <input type="text" [(ngModel)]="name" placeholder="e.g. 50x30 Front Label">
+        <input type="text" [(ngModel)]="name" placeholder="e.g. 50x30 Front Label" data-testid="label-name-input">
       </div>
       <div class="form-row">
         <div class="form-group">
           <label>Width (mm)</label>
-          <input type="number" [(ngModel)]="widthMm" (change)="updateCanvasSize()">
+          <input type="number" [(ngModel)]="widthMm" (change)="updateCanvasSize()" data-testid="label-width-input">
         </div>
         <div class="form-group">
           <label>Height (mm)</label>
-          <input type="number" [(ngModel)]="heightMm" (change)="updateCanvasSize()">
+          <input type="number" [(ngModel)]="heightMm" (change)="updateCanvasSize()" data-testid="label-height-input">
         </div>
       </div>
     </div>
@@ -36,19 +36,19 @@
     <div class="card panel">
       <h3>Add Elements</h3>
       <div class="tools-grid">
-        <button class="tool-btn" (click)="addText()">
+        <button class="tool-btn" (click)="addText()" data-testid="label-add-text-btn">
           <span class="material-icons">title</span>
           Text
         </button>
-        <button class="tool-btn" (click)="addVariable()">
+        <button class="tool-btn" (click)="addVariable()" data-testid="label-add-variable-btn">
           <span class="material-icons">data_object</span>
           Variable
         </button>
-        <button class="tool-btn" (click)="addShape('rect')">
+        <button class="tool-btn" (click)="addShape('rect')" data-testid="label-add-rect-btn">
           <span class="material-icons">crop_square</span>
           Rectangle
         </button>
-        <button class="tool-btn" (click)="addShape('circle')">
+        <button class="tool-btn" (click)="addShape('circle')" data-testid="label-add-circle-btn">
           <span class="material-icons">circle</span>
           Circle
         </button>
@@ -59,7 +59,7 @@
   <!-- ─── Center: Canvas ─────────────────────────────────────────────── -->
   <div class="canvas-container" #canvasContainer>
     <div class="canvas-wrapper">
-      <canvas #canvasEl></canvas>
+      <canvas #canvasEl data-testid="label-canvas"></canvas>
     </div>
     <div class="canvas-ruler">
       {{ widthMm }}mm × {{ heightMm }}mm (Scaled for view)
@@ -83,7 +83,7 @@
             <span class="material-icons" style="font-size:14px">link</span> 
             Variable Mapping
           </label>
-          <select [(ngModel)]="mappedField">
+          <select [(ngModel)]="mappedField" data-testid="label-variable-mapping-select">
             <option value="">Select variable data…</option>
             <option *ngFor="let v of availableVariables" [value]="v.value">{{ v.label }}</option>
           </select>
@@ -92,7 +92,7 @@
         <!-- Font Size -->
         <div class="form-group" *ngIf="isText">
           <label>Font Size (px)</label>
-          <input type="number" [(ngModel)]="fontSize" min="8" max="150" style="width: 100%; padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); outline: none;">
+          <input type="number" [(ngModel)]="fontSize" min="8" max="150" style="width: 100%; padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); outline: none;" data-testid="label-font-size-input">
         </div>
 
         <!-- Layer Controls -->
@@ -109,10 +109,10 @@
         </div>
 
         <div style="display: flex; gap: 8px; margin-top: 16px;">
-          <button class="btn btn-ghost" style="flex: 1; justify-content: center;" (click)="duplicateSelected()" title="Ctrl+D">
+          <button class="btn btn-ghost" style="flex: 1; justify-content: center;" (click)="duplicateSelected()" title="Ctrl+D" data-testid="label-duplicate-btn">
             <span class="material-icons">content_copy</span> Duplicate
           </button>
-          <button class="btn btn-danger" style="flex: 1; justify-content: center;" (click)="deleteSelected()">
+          <button class="btn btn-danger" style="flex: 1; justify-content: center;" (click)="deleteSelected()" data-testid="label-delete-element-btn">
             <span class="material-icons">delete</span> Delete
           </button>
         </div>

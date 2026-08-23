@@ -6,7 +6,7 @@
       <h1>Material Purchases</h1>
       <p class="subtitle">Log raw material purchases to track moving average costs & dynamic candle margins.</p>
     </div>
-    <button class="btn btn-primary" (click)="openModal()">
+    <button class="btn btn-primary" (click)="openModal()" data-testid="purchases-record-btn">
       <span class="material-icons">add_shopping_cart</span>
       Record Purchase
     </button>
@@ -46,7 +46,7 @@
       <span class="material-icons">shopping_bag</span>
       <h3>No Material Purchases Yet</h3>
       <p>Click "Record Purchase" to start logging raw material purchases (wax, fragrances, containers).</p>
-      <button class="btn btn-primary" (click)="openModal()">Record Purchase</button>
+      <button class="btn btn-primary" (click)="openModal()" data-testid="purchases-empty-record-btn">Record Purchase</button>
     </div>
 
     <table *ngIf="purchases.length > 0" class="data-table">

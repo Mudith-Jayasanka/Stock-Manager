@@ -75,11 +75,11 @@
             </td>
             <td>
               <div class="row-print">
-                <button class="icon-btn" title="Print one replacement label" (click)="toggleRowPrintMenu(item)">
+                <button class="icon-btn" title="Print one replacement label" (click)="toggleRowPrintMenu(item)" [attr.data-testid]="'order-detail-item-print-btn-' + item.productId">
                   <span class="material-icons">print</span>
                 </button>
                 <div class="template-dropdown" *ngIf="openPrintMenuFor === item.productId">
-                  <button class="template-option" *ngFor="let tmpl of templates" (click)="printItemTemplate(item, tmpl.id)">
+                  <button class="template-option" *ngFor="let tmpl of templates" (click)="printItemTemplate(item, tmpl.id)" [attr.data-testid]="'order-detail-item-print-tmpl-' + tmpl.id">
                     {{ tmpl.name }}
                   </button>
                   <div class="template-empty" *ngIf="templates.length === 0">No templates</div>
@@ -93,7 +93,7 @@
       <div class="order-summary">
         <div class="summary-row total">
           <span>Total Amount</span>
-          <span>Rs. {{ orderTotal | number }}</span>
+          <span data-testid="order-detail-total-price">Rs. {{ orderTotal | number }}</span>
         </div>
       </div>
     </div>
@@ -104,7 +104,7 @@
     <div class="card status-card">
       <h2>Current Status</h2>
       <div class="status-display">
-        <span class="status-badge" [ngClass]="order.status">
+        <span class="status-badge" [ngClass]="order.status" data-testid="order-detail-status-badge">
           {{ order.status }}
         </span>
       </div>
@@ -126,7 +126,7 @@
               <span class="tmpl-name">{{ tmpl.name }}</span>
             </div>
           </div>
-          <button class="btn btn-primary" (click)="printTemplate(tmpl.id)">
+          <button class="btn btn-primary" (click)="printTemplate(tmpl.id)" [attr.data-testid]="'order-detail-print-btn-' + tmpl.id">
             <span class="material-icons">print</span>
           </button>
         </div>
