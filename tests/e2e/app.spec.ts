@@ -1,9 +1,14 @@
 import { test, expect } from '@playwright/test';
 import { UI_SELECTORS } from '../../frontend/src/app/testing/ui-selectors';
 
-test.describe.serial('Stock Manager Comprehensive End-to-End Test Suite', () => {
+test.describe.serial('Stock Manager Comprehensive End-to-End Test Suite (FEAT-007 Complete BOM)', () => {
 
   let page;
+  let container1Name: string;
+  let wax1Name: string;
+  let wax2Name: string;
+  let frag1Name: string;
+  let frag2Name: string;
 
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
@@ -43,40 +48,50 @@ test.describe.serial('Stock Manager Comprehensive End-to-End Test Suite', () => 
     await page.click(`[data-testid="${UI_SELECTORS.NAV.MASTER_DATA_LINK}"]`);
     await page.click(`[data-testid="${UI_SELECTORS.MASTER_DATA.TAB_CONTAINERS}"]`);
 
-    const containerName = `E2E Amber Jar ${Date.now()}`;
+    container1Name = `E2E Amber Jar ${Date.now()}`;
     const activeTabContent = page.locator('.tab-content');
     const nameInput = activeTabContent.locator(`[data-testid="${UI_SELECTORS.MASTER_DATA.NAME_INPUT}"]`);
-    await nameInput.fill(containerName);
+    await nameInput.fill(container1Name);
     await nameInput.dispatchEvent('input');
     await activeTabContent.locator(`[data-testid="${UI_SELECTORS.MASTER_DATA.ADD_BTN}"]`).click();
 
-    await expect(activeTabContent).toContainText(containerName);
+    await expect(activeTabContent).toContainText(container1Name);
   });
 
-  test('Step 3: Master Data - Create new Wax raw material', async () => {
+  test('Step 3: Master Data - Create new Wax raw materials (Soy Wax & Beeswax)', async () => {
     await page.click(`[data-testid="${UI_SELECTORS.MASTER_DATA.TAB_WAXES}"]`);
 
-    const waxName = `E2E Golden Soy Wax ${Date.now()}`;
+    wax1Name = `E2E Golden Soy Wax ${Date.now()}`;
     const activeTabContent = page.locator('.tab-content');
     const nameInput = activeTabContent.locator(`[data-testid="${UI_SELECTORS.MASTER_DATA.NAME_INPUT}"]`);
-    await nameInput.fill(waxName);
+    await nameInput.fill(wax1Name);
     await nameInput.dispatchEvent('input');
     await activeTabContent.locator(`[data-testid="${UI_SELECTORS.MASTER_DATA.ADD_BTN}"]`).click();
+    await expect(activeTabContent).toContainText(wax1Name);
 
-    await expect(activeTabContent).toContainText(waxName);
+    wax2Name = `E2E Beeswax ${Date.now()}`;
+    await nameInput.fill(wax2Name);
+    await nameInput.dispatchEvent('input');
+    await activeTabContent.locator(`[data-testid="${UI_SELECTORS.MASTER_DATA.ADD_BTN}"]`).click();
+    await expect(activeTabContent).toContainText(wax2Name);
   });
 
-  test('Step 4: Master Data - Create new Fragrance raw material', async () => {
+  test('Step 4: Master Data - Create new Fragrance raw materials (Vanilla & Lavender)', async () => {
     await page.click(`[data-testid="${UI_SELECTORS.MASTER_DATA.TAB_FRAGRANCES}"]`);
 
-    const fragranceName = `E2E Vanilla Bean ${Date.now()}`;
+    frag1Name = `E2E Vanilla Bean ${Date.now()}`;
     const activeTabContent = page.locator('.tab-content');
     const nameInput = activeTabContent.locator(`[data-testid="${UI_SELECTORS.MASTER_DATA.NAME_INPUT}"]`);
-    await nameInput.fill(fragranceName);
+    await nameInput.fill(frag1Name);
     await nameInput.dispatchEvent('input');
     await activeTabContent.locator(`[data-testid="${UI_SELECTORS.MASTER_DATA.ADD_BTN}"]`).click();
+    await expect(activeTabContent).toContainText(frag1Name);
 
-    await expect(activeTabContent).toContainText(fragranceName);
+    frag2Name = `E2E French Lavender ${Date.now()}`;
+    await nameInput.fill(frag2Name);
+    await nameInput.dispatchEvent('input');
+    await activeTabContent.locator(`[data-testid="${UI_SELECTORS.MASTER_DATA.ADD_BTN}"]`).click();
+    await expect(activeTabContent).toContainText(frag2Name);
   });
 
   // ─── 2. BASE PREREQUISITES: CUSTOMERS ───────────────────────────────────────
@@ -122,14 +137,70 @@ test.describe.serial('Stock Manager Comprehensive End-to-End Test Suite', () => 
     await expect(page.locator(`[data-testid="${UI_SELECTORS.CUSTOMERS.LIST.TABLE}"]`)).toContainText(customerName);
   });
 
-  // ─── 3. 1ST-TIER DEPENDENTS: PRODUCTS CATALOG & BOM ────────────────────────
+  // ─── 3. RAW MATERIAL PURCHASES (ESTABLISH COMPLETE BOM BASELINE) ───────────
 
-  test('Step 6: Products - Create product with recipe BOM & verify warning banner', async () => {
+  test('Step 6: Purchases - Log raw material purchases for Container, Wax 1 & Fragrance 1', async () => {
+    await page.click(`[data-testid="${UI_SELECTORS.NAV.PURCHASES_LINK}"]`);
+    await expect(page).toHaveURL(/.*\/purchases/);
+
+    // 1. Log Container Purchase (50 units @ Rs. 7,500 total -> Rs. 150 / unit)
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.RECORD_BTN}"]`);
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.CATEGORY_CONTAINER_BTN}"]`);
+    const matSelectCt = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.MATERIAL_ID_SELECT}"]`);
+    await matSelectCt.selectOption({ label: container1Name });
+    await matSelectCt.dispatchEvent('change');
+    const qtyCt = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.QUANTITY_INPUT}"]`);
+    await qtyCt.fill('50');
+    await qtyCt.dispatchEvent('input');
+    const costCt = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.TOTAL_COST_INPUT}"]`);
+    await costCt.fill('7500');
+    await costCt.dispatchEvent('input');
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.SUBMIT_BTN}"]`);
+    await page.waitForTimeout(500);
+
+    // 2. Log Wax 1 Purchase (5000g / 5kg @ Rs. 5,000 total -> Rs. 1.00 / g)
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.RECORD_BTN}"]`);
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.CATEGORY_WAX_BTN}"]`);
+    const matSelectWax = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.MATERIAL_ID_SELECT}"]`);
+    await matSelectWax.selectOption({ label: wax1Name });
+    await matSelectWax.dispatchEvent('change');
+    const qtyWax = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.QUANTITY_INPUT}"]`);
+    await qtyWax.fill('5'); // 5 kg
+    await qtyWax.dispatchEvent('input');
+    const unitWax = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.UNIT_SELECT}"]`);
+    await unitWax.selectOption('kg');
+    await unitWax.dispatchEvent('change');
+    const costWax = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.TOTAL_COST_INPUT}"]`);
+    await costWax.fill('5000');
+    await costWax.dispatchEvent('input');
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.SUBMIT_BTN}"]`);
+    await page.waitForTimeout(500);
+
+    // 3. Log Fragrance 1 Purchase (500ml @ Rs. 5,000 total -> Rs. 10.00 / ml)
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.RECORD_BTN}"]`);
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.CATEGORY_FRAGRANCE_BTN}"]`);
+    const matSelectFrag = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.MATERIAL_ID_SELECT}"]`);
+    await matSelectFrag.selectOption({ label: frag1Name });
+    await matSelectFrag.dispatchEvent('change');
+    const qtyFrag = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.QUANTITY_INPUT}"]`);
+    await qtyFrag.fill('500');
+    await qtyFrag.dispatchEvent('input');
+    const costFrag = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.TOTAL_COST_INPUT}"]`);
+    await costFrag.fill('5000');
+    await costFrag.dispatchEvent('input');
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.SUBMIT_BTN}"]`);
+
+    await expect(page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.TABLE}"]`)).toBeVisible();
+  });
+
+  // ─── 4. PRODUCTS CATALOG & COMPLETE BOM VALIDATION ─────────────────────────
+
+  test('Step 7: Products - Create Product with Proper Complete BOM & verify exact cost/profit rollup', async () => {
     await page.click(`[data-testid="${UI_SELECTORS.NAV.PRODUCTS_LINK}"]`);
     await page.click(`[data-testid="${UI_SELECTORS.PRODUCTS.LIST.CREATE_BTN}"]`);
 
-    const productName = `E2E Scented Candle ${Date.now()}`;
-    
+    const productName = `E2E Complete BOM Candle ${Date.now()}`;
+
     const nameInput = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.NAME_INPUT}"]`);
     await nameInput.fill(productName);
     await nameInput.dispatchEvent('input');
@@ -146,90 +217,221 @@ test.describe.serial('Stock Manager Comprehensive End-to-End Test Suite', () => 
     await loadInput.fill('10');
     await loadInput.dispatchEvent('input');
 
-    // Select Container
+    // Select Container 1
     const containerSelect = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.CONTAINER_SELECT}"]`);
-    await containerSelect.selectOption({ index: 1 });
+    await containerSelect.selectOption({ label: container1Name });
     await containerSelect.dispatchEvent('change');
 
-    // Add Wax (100%)
+    // Add Wax 1 (100%)
     const waxSelect = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.WAX_SELECT}"]`);
-    await waxSelect.selectOption({ index: 1 });
+    await waxSelect.selectOption({ label: wax1Name });
     await waxSelect.dispatchEvent('change');
     await page.click(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.ADD_WAX_BTN}"]`);
     const waxPctInput = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.WAX_PCT_INPUT(0)}"]`);
     await waxPctInput.fill('100');
     await waxPctInput.dispatchEvent('input');
 
-    // Add Fragrance (100%)
+    // Add Fragrance 1 (100%)
     const fragranceSelect = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.FRAGRANCE_SELECT}"]`);
-    await fragranceSelect.selectOption({ index: 1 });
+    await fragranceSelect.selectOption({ label: frag1Name });
     await fragranceSelect.dispatchEvent('change');
     await page.click(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.ADD_FRAGRANCE_BTN}"]`);
     const fragPctInput = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.FRAGRANCE_PCT_INPUT(0)}"]`);
     await fragPctInput.fill('100');
     await fragPctInput.dispatchEvent('input');
 
-    // Verify warning banner
+    // Assert WARNING BANNER IS HIDDEN for Complete BOM
     const warningBanner = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.WARNING_BANNER}"]`);
-    await expect(warningBanner).toBeVisible();
+    await expect(warningBanner).not.toBeVisible();
+
+    // Assert Preview BOM Cost using candle math (513.64)
+    const bomCostPreview = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.PREVIEW_BOM_COST}"]`);
+    await expect(bomCostPreview).toContainText('513.64');
 
     // Save Product
     const saveBtn = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.SAVE_BTN}"]`);
     await expect(saveBtn).toBeEnabled();
     await saveBtn.click();
+
     await expect(page).toHaveURL(/.*\/products/);
-    await expect(page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.LIST.TABLE}"]`)).toBeVisible({ timeout: 15000 });
-    await expect(page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.LIST.TABLE}"]`)).toContainText(productName);
+    const table = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.LIST.TABLE}"]`);
+    await expect(table).toBeVisible({ timeout: 15000 });
+    await expect(table).toContainText(productName);
+    await expect(table).toContainText('513.64');
   });
 
-  test('Step 7: Products - Verify partial BOM badge in table for products lacking purchase history', async () => {
+  test('Step 7b: Products - Partial to Complete BOM State Transition upon purchase logging', async () => {
     await page.click(`[data-testid="${UI_SELECTORS.NAV.PRODUCTS_LINK}"]`);
-    await expect(page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.LIST.TABLE}"]`)).toBeVisible();
+    await page.click(`[data-testid="${UI_SELECTORS.PRODUCTS.LIST.CREATE_BTN}"]`);
+
+    const partialProductName = `E2E Transition Candle ${Date.now()}`;
+
+    const nameInput = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.NAME_INPUT}"]`);
+    await nameInput.fill(partialProductName);
+    await nameInput.dispatchEvent('input');
+
+    const priceInput = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.PRICE_INPUT}"]`);
+    await priceInput.fill('4000');
+    await priceInput.dispatchEvent('input');
+
+    const weightInput = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.WEIGHT_INPUT}"]`);
+    await weightInput.fill('200');
+    await weightInput.dispatchEvent('input');
+
+    const loadInput = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.FRAGRANCE_LOAD_INPUT}"]`);
+    await loadInput.fill('10');
+    await loadInput.dispatchEvent('input');
+
+    // Select Container 1 (has purchase)
+    const containerSelect = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.CONTAINER_SELECT}"]`);
+    await containerSelect.selectOption({ label: container1Name });
+    await containerSelect.dispatchEvent('change');
+
+    // Add Wax 2 (Beeswax - 0 purchases yet!)
+    const waxSelect = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.WAX_SELECT}"]`);
+    await waxSelect.selectOption({ label: wax2Name });
+    await waxSelect.dispatchEvent('change');
+    await page.click(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.ADD_WAX_BTN}"]`);
+    const waxPctInput = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.WAX_PCT_INPUT(0)}"]`);
+    await waxPctInput.fill('100');
+    await waxPctInput.dispatchEvent('input');
+
+    // Add Fragrance 1 (has purchase)
+    const fragranceSelect = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.FRAGRANCE_SELECT}"]`);
+    await fragranceSelect.selectOption({ label: frag1Name });
+    await fragranceSelect.dispatchEvent('change');
+    await page.click(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.ADD_FRAGRANCE_BTN}"]`);
+    const fragPctInput = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.FRAGRANCE_PCT_INPUT(0)}"]`);
+    await fragPctInput.fill('100');
+    await fragPctInput.dispatchEvent('input');
+
+    // Assert Warning Banner IS VISIBLE because Wax 2 is unpriced
+    const warningBanner = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.WARNING_BANNER}"]`);
+    await expect(warningBanner).toBeVisible();
+
+    // Save Product
+    await page.click(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.SAVE_BTN}"]`);
+    await expect(page).toHaveURL(/.*\/products/);
+
+    // Verify product row shows Partial BOM warning badge
+    const table = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.LIST.TABLE}"]`);
+    await expect(table).toContainText(partialProductName);
+    await expect(table).toContainText('Partial BOM');
+
+    // Now log purchase for Wax 2 to complete BOM
+    await page.click(`[data-testid="${UI_SELECTORS.NAV.PURCHASES_LINK}"]`);
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.RECORD_BTN}"]`);
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.CATEGORY_WAX_BTN}"]`);
+    const matSelectWax2 = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.MATERIAL_ID_SELECT}"]`);
+    await matSelectWax2.selectOption({ label: wax2Name });
+    await matSelectWax2.dispatchEvent('change');
+    const qtyWax2 = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.QUANTITY_INPUT}"]`);
+    await qtyWax2.fill('2'); // 2 kg
+    await qtyWax2.dispatchEvent('input');
+    const unitWax2 = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.UNIT_SELECT}"]`);
+    await unitWax2.selectOption('kg');
+    await unitWax2.dispatchEvent('change');
+    const costWax2 = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.TOTAL_COST_INPUT}"]`);
+    await costWax2.fill('4000'); // Rs. 2.00 / g
+    await costWax2.dispatchEvent('input');
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.SUBMIT_BTN}"]`);
+
+    // Return to Products table and assert Partial BOM badge is GONE
+    await page.click(`[data-testid="${UI_SELECTORS.NAV.PRODUCTS_LINK}"]`);
+    const productRow = table.locator('tr', { hasText: partialProductName });
+    await expect(productRow).not.toContainText('Partial BOM');
   });
 
-  // ─── 4. 1ST-TIER DEPENDENTS: RAW MATERIAL PURCHASES ────────────────────────
-
-  test('Step 8: Purchases - Log raw material purchase & verify unit cost calculation', async () => {
+  test('Step 7c: Products - Multi-Ingredient Recipe BOM Rollup (60% Soy / 40% Beeswax, 70% Vanilla / 30% Lavender)', async () => {
+    // Log purchase for Fragrance 2 (Lavender) first
     await page.click(`[data-testid="${UI_SELECTORS.NAV.PURCHASES_LINK}"]`);
-    await expect(page).toHaveURL(/.*\/purchases/);
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.RECORD_BTN}"]`);
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.CATEGORY_FRAGRANCE_BTN}"]`);
+    const matSelectFrag2 = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.MATERIAL_ID_SELECT}"]`);
+    await matSelectFrag2.selectOption({ label: frag2Name });
+    await matSelectFrag2.dispatchEvent('change');
+    const qtyFrag2 = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.QUANTITY_INPUT}"]`);
+    await qtyFrag2.fill('500');
+    await qtyFrag2.dispatchEvent('input');
+    const costFrag2 = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.TOTAL_COST_INPUT}"]`);
+    await costFrag2.fill('7500'); // Rs. 15.00 / ml
+    await costFrag2.dispatchEvent('input');
+    await page.click(`[data-testid="${UI_SELECTORS.PURCHASES.SUBMIT_BTN}"]`);
 
-    const recordBtn = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.RECORD_BTN}"]`);
-    await expect(recordBtn).toBeVisible();
-    await recordBtn.click();
+    // Create Multi-Blend Candle (250g, 10% frag load)
+    await page.click(`[data-testid="${UI_SELECTORS.NAV.PRODUCTS_LINK}"]`);
+    await page.click(`[data-testid="${UI_SELECTORS.PRODUCTS.LIST.CREATE_BTN}"]`);
 
-    const waxCatBtn = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.CATEGORY_WAX_BTN}"]`);
-    if (await waxCatBtn.isVisible()) {
-      await waxCatBtn.click();
-    }
+    const multiBlendName = `E2E Multi-Blend Candle ${Date.now()}`;
 
-    const matSelect = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.MATERIAL_ID_SELECT}"]`);
-    await matSelect.selectOption({ index: 1 });
-    await matSelect.dispatchEvent('change');
+    const nameInput = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.NAME_INPUT}"]`);
+    await nameInput.fill(multiBlendName);
+    await nameInput.dispatchEvent('input');
 
-    const qtyInput = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.QUANTITY_INPUT}"]`);
-    await qtyInput.fill('5000');
-    await qtyInput.dispatchEvent('input');
+    const priceInput = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.PRICE_INPUT}"]`);
+    await priceInput.fill('4500');
+    await priceInput.dispatchEvent('input');
 
-    const costInput = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.TOTAL_COST_INPUT}"]`);
-    await costInput.fill('7500');
-    await costInput.dispatchEvent('input');
+    const weightInput = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.WEIGHT_INPUT}"]`);
+    await weightInput.fill('250');
+    await weightInput.dispatchEvent('input');
 
-    const supplierInput = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.SUPPLIER_INPUT}"]`);
-    if (await supplierInput.isVisible()) {
-      await supplierInput.fill('E2E Supplier Co');
-      await supplierInput.dispatchEvent('input');
-    }
+    const loadInput = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.FRAGRANCE_LOAD_INPUT}"]`);
+    await loadInput.fill('10');
+    await loadInput.dispatchEvent('input');
 
-    const submitBtn = page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.SUBMIT_BTN}"]`);
-    await expect(submitBtn).toBeEnabled();
-    await submitBtn.click();
+    // Container 1 (Rs. 150)
+    const containerSelect = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.CONTAINER_SELECT}"]`);
+    await containerSelect.selectOption({ label: container1Name });
+    await containerSelect.dispatchEvent('change');
 
-    await expect(page.locator(`[data-testid="${UI_SELECTORS.PURCHASES.TABLE}"]`)).toBeVisible();
+    // Add 60% Wax 1 (Soy @ Rs. 1.00/g) & 40% Wax 2 (Beeswax @ Rs. 2.00/g)
+    const waxSelect = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.WAX_SELECT}"]`);
+    await waxSelect.selectOption({ label: wax1Name });
+    await waxSelect.dispatchEvent('change');
+    await page.click(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.ADD_WAX_BTN}"]`);
+    const wax1Pct = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.WAX_PCT_INPUT(0)}"]`);
+    await wax1Pct.fill('60');
+    await wax1Pct.dispatchEvent('input');
+
+    await waxSelect.selectOption({ label: wax2Name });
+    await waxSelect.dispatchEvent('change');
+    await page.click(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.ADD_WAX_BTN}"]`);
+    const wax2Pct = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.WAX_PCT_INPUT(1)}"]`);
+    await wax2Pct.fill('40');
+    await wax2Pct.dispatchEvent('input');
+
+    // Add 70% Fragrance 1 (Vanilla @ Rs. 10.00/ml) & 30% Fragrance 2 (Lavender @ Rs. 15.00/ml)
+    const fragSelect = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.FRAGRANCE_SELECT}"]`);
+    await fragSelect.selectOption({ label: frag1Name });
+    await fragSelect.dispatchEvent('change');
+    await page.click(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.ADD_FRAGRANCE_BTN}"]`);
+    const frag1Pct = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.FRAGRANCE_PCT_INPUT(0)}"]`);
+    await frag1Pct.fill('70');
+    await frag1Pct.dispatchEvent('input');
+
+    await fragSelect.selectOption({ label: frag2Name });
+    await fragSelect.dispatchEvent('change');
+    await page.click(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.ADD_FRAGRANCE_BTN}"]`);
+    const frag2Pct = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.FRAGRANCE_PCT_INPUT(1)}"]`);
+    await frag2Pct.fill('30');
+    await frag2Pct.dispatchEvent('input');
+
+    // Assert calculated BOM cost = 729.55 in preview
+    const bomPreview = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.PREVIEW_BOM_COST}"]`);
+    await expect(bomPreview).toContainText('729.55');
+
+    // Save and verify in table
+    await page.click(`[data-testid="${UI_SELECTORS.PRODUCTS.CREATE.SAVE_BTN}"]`);
+    await expect(page).toHaveURL(/.*\/products/);
+    const table = page.locator(`[data-testid="${UI_SELECTORS.PRODUCTS.LIST.TABLE}"]`);
+    await expect(table).toContainText(multiBlendName);
+    await expect(table).toContainText('729.55');
   });
 
   // ─── 5. 2ND-TIER DEPENDENTS: ORDERS LIFECYCLE ────────────────────────────────
 
-  test('Step 9: Orders - Create order with registered customer and line items', async () => {
+  test('Step 8: Orders - Create order with registered customer and line items', async () => {
     await page.click(`[data-testid="${UI_SELECTORS.NAV.ORDERS_LINK}"]`);
     await expect(page).toHaveURL(/.*\/orders/);
 
@@ -260,7 +462,7 @@ test.describe.serial('Stock Manager Comprehensive End-to-End Test Suite', () => 
     await expect(page).toHaveURL(/\/orders\/ord-/);
   });
 
-  test('Step 10: Orders - Filter order records by status dropdown', async () => {
+  test('Step 9: Orders - Filter order records by status dropdown', async () => {
     await page.click(`[data-testid="${UI_SELECTORS.NAV.ORDERS_LINK}"]`);
     await expect(page).toHaveURL(/\/orders$/);
     const statusFilter = page.locator(`[data-testid="${UI_SELECTORS.ORDERS.LIST.STATUS_FILTER}"]`);
@@ -274,13 +476,13 @@ test.describe.serial('Stock Manager Comprehensive End-to-End Test Suite', () => 
 
   // ─── 6. 2ND-TIER DEPENDENTS: LABELS TEMPLATE DESIGNER ───────────────────────
 
-  test('Step 11: Labels - Navigate to labels manager and inspect template list', async () => {
+  test('Step 10: Labels - Navigate to labels manager and inspect template list', async () => {
     await page.click(`[data-testid="${UI_SELECTORS.NAV.LABELS_LINK}"]`);
     await expect(page).toHaveURL(/\/labels$/);
     await expect(page.locator('.page-title')).toContainText('Label Templates');
   });
 
-  test('Step 12: Labels - Create new label template with canvas elements and save', async () => {
+  test('Step 11: Labels - Create new label template with canvas elements and save', async () => {
     await page.click(`[data-testid="${UI_SELECTORS.NAV.LABELS_LINK}"]`);
     await expect(page).toHaveURL(/\/labels$/);
     await page.click(`[data-testid="${UI_SELECTORS.LABELS.LIST.CREATE_BTN}"]`);

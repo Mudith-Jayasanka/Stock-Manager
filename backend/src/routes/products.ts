@@ -52,8 +52,6 @@ async function enrichProduct(productRow: any) {
   const weightGrams = parseFloat(productRow.weight_grams || 0);
   const fragranceLoad = parseFloat(productRow.fragrance_load || 0);
 
-  const fragranceWeight = weightGrams * (fragranceLoad / 100);
-  const waxWeight = weightGrams * (1 - fragranceLoad / 100);
 
   const weightedFragranceUnitCost = fragrances.reduce((sum, f) => sum + ((f.percentage / 100) * f.unitCost), 0);
   const weightedWaxUnitCost = waxes.reduce((sum, w) => sum + ((w.percentage / 100) * w.unitCost), 0);
