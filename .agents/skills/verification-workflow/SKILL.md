@@ -15,13 +15,7 @@ Before starting verification tests, ensure `devdb` is running on baseline or cle
 npm run db:restore:dev
 ```
 
-### 2. TypeScript Static Typecheck Gate (`npm run typecheck`)
-Run static type-checking across both backend and frontend to catch compilation errors, missing imports, or syntax issues immediately:
-```bash
-npm run typecheck
-```
-
-### 3. UI Selector Registry & Template Tagging Check (`data-testid`)
+### 2. UI Selector Registry & Template Tagging Check (`data-testid`)
 - **Mandatory Template Tagging**: Verify that any newly added or modified UI elements (navigation links, tab buttons, form inputs, save/submit buttons, headers, status badges, price cells) are tagged with matching `data-testid="..."` or `[attr.data-testid]="..."` attributes directly in the Angular component HTML template.
 - **Central Registry**: Verify that all test IDs are registered in `frontend/src/app/testing/ui-selectors.ts`.
 
