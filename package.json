@@ -4,6 +4,7 @@
   "description": "Stock Manager System Root Package",
   "main": "index.js",
   "scripts": {
+    "typecheck": "(cd backend && npx tsc --noEmit) && (cd frontend && npx tsc --noEmit)",
     "test:api": "cd backend && DB_MODE=development node -r ts-node/register --test ../tests/api/all.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
