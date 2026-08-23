@@ -20,9 +20,16 @@ export class CustomersListComponent implements OnInit {
   saving = false;
   errorMessage = '';
 
+  showCreateModal = false;
   showEditModal = false;
   showDeleteModal = false;
   selectedCustomer: Customer | null = null;
+  createForm = {
+    fullName: '',
+    phone: '',
+    email: '',
+    address: ''
+  };
   editForm = {
     fullName: '',
     phone: '',
@@ -92,6 +99,47 @@ export class CustomersListComponent implements OnInit {
 
   prevPage() {
     if (this.currentPage > 1) this.currentPage--;
+  }
+
+  openCreate() {
+    this.createForm = {
+      fullName: '',
+      phone: '',
+      email: '',
+      address: ''
+    };
+    this.errorMessage = '';
+    this.showCreateModal = true;
+  }
+
+  closeCreate() {
+    if (this.saving) return;
+    this.showCreateModal = false;
+    this.errorMessage = '';
+  }
+
+  createCustomer() {
+    if (!this.createForm.fullName.trim() || !this.createForm.phone.trim()) return;
+
+    this.saving = true;
+    this.errorMessage = '';
+    this.customersService.createCustomer({
+      fullName: this.createForm.fullName.trim(),
+      phone: this.createForm.phone.trim(),
+      email: this.createForm.email.trim(),
+      address: this.createForm.address.trim()
+    }).subscribe({
+      next: (created) => {
+        this.customers.unshift(created);
+        this.applySearch();
+        this.saving = false;
+        this.closeCreate();
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.error || 'Could not create customer.';
+        this.saving = false;
+      }
+    });
   }
 
   openEdit(customer: Customer) {

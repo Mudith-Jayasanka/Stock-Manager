@@ -94,6 +94,34 @@ test.describe.serial('Stock Manager Comprehensive End-to-End Test Suite', () => 
     await searchInput.dispatchEvent('input');
   });
 
+  test('Step 5b: Customers - Create new customer via modal', async () => {
+    await page.click(`[data-testid="${UI_SELECTORS.NAV.CUSTOMERS_LINK}"]`);
+    await page.click(`[data-testid="${UI_SELECTORS.CUSTOMERS.LIST.CREATE_BTN}"]`);
+
+    const customerName = `E2E Customer ${Date.now()}`;
+    const customerPhone = `077${Math.floor(1000000 + Math.random() * 9000000)}`;
+
+    const nameInput = page.locator(`[data-testid="${UI_SELECTORS.CUSTOMERS.FORM.NAME_INPUT}"]`);
+    await nameInput.fill(customerName);
+    await nameInput.dispatchEvent('input');
+
+    const phoneInput = page.locator(`[data-testid="${UI_SELECTORS.CUSTOMERS.FORM.PHONE_INPUT}"]`);
+    await phoneInput.fill(customerPhone);
+    await phoneInput.dispatchEvent('input');
+
+    const emailInput = page.locator(`[data-testid="${UI_SELECTORS.CUSTOMERS.FORM.EMAIL_INPUT}"]`);
+    await emailInput.fill('e2ecustomer@example.com');
+    await emailInput.dispatchEvent('input');
+
+    const addressInput = page.locator(`[data-testid="${UI_SELECTORS.CUSTOMERS.FORM.ADDRESS_INPUT}"]`);
+    await addressInput.fill('123 E2E Test Lane');
+    await addressInput.dispatchEvent('input');
+
+    await page.click(`[data-testid="${UI_SELECTORS.CUSTOMERS.FORM.SAVE_BTN}"]`);
+
+    await expect(page.locator(`[data-testid="${UI_SELECTORS.CUSTOMERS.LIST.TABLE}"]`)).toContainText(customerName);
+  });
+
   // ─── 3. 1ST-TIER DEPENDENTS: PRODUCTS CATALOG & BOM ────────────────────────
 
   test('Step 6: Products - Create product with recipe BOM & verify warning banner', async () => {

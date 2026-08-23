@@ -7,6 +7,7 @@
     "test:api": "cd backend && DB_MODE=development node -r ts-node/register --test ../tests/api/all.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
+    "db:snapshot:dev": "cd backend && npm run db:snapshot:dev",
     "db:restore:dev": "cd backend && npm run db:restore:dev"
   },
   "keywords": [],

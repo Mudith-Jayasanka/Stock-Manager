@@ -3,6 +3,9 @@
     <h1>Customers</h1>
     <p>View and search customer records</p>
   </div>
+  <button class="btn btn-primary" (click)="openCreate()" data-testid="customers-create-btn">
+    <span class="material-icons">add</span> Add Customer
+  </button>
 </div>
 
 <!-- Toolbar -->
@@ -68,6 +71,47 @@
       <span class="page-num">Page {{ currentPage }} of {{ totalPages }}</span>
       <button class="btn btn-ghost" [disabled]="currentPage === totalPages" (click)="nextPage()">
         Next <span class="material-icons">chevron_right</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Customer Modal -->
+<div class="modal-overlay" *ngIf="showCreateModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Add Customer</h3>
+      <button class="close-btn" (click)="closeCreate()" [disabled]="saving">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" [(ngModel)]="createForm.fullName" placeholder="e.g. Jane Doe" data-testid="customer-name-input">
+      </div>
+
+      <div class="form-group">
+        <label>Phone *</label>
+        <input type="text" [(ngModel)]="createForm.phone" placeholder="e.g. 0771234567" data-testid="customer-phone-input">
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="createForm.email" placeholder="e.g. jane@example.com" data-testid="customer-email-input">
+      </div>
+
+      <div class="form-group">
+        <label>Address</label>
+        <textarea rows="3" [(ngModel)]="createForm.address" placeholder="Customer address…" data-testid="customer-address-input"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" (click)="closeCreate()" [disabled]="saving" data-testid="customer-cancel-btn">Cancel</button>
+      <button class="btn btn-primary" (click)="createCustomer()" [disabled]="saving || !createForm.fullName.trim() || !createForm.phone.trim()" data-testid="customer-save-btn">
+        Save Customer
       </button>
     </div>
   </div>

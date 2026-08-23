@@ -27,6 +27,7 @@ Use this skill when managing features or bugfixes in the Stock-Manager repositor
 
 ### 4. Develop & Test
 - Run dev server: `npm run dev:devdb`
+- **Schema & Table Synchronization**: Whenever creating or modifying database tables in `setupDb.ts`, immediately register the new table in both `snapshotDb.ts` (`tables` array) and `restoreDb.ts` (`tableOrder` array in topological order).
 - **UI Selector Tagging**: Whenever adding or modifying UI elements in Angular HTML templates, immediately tag them with `data-testid="..."` attributes and register keys in `frontend/src/app/testing/ui-selectors.ts`.
 - **E2E Test Updates**: Maintain sequential dependency ordering (Master Data -> Customers -> Products -> Orders) in `tests/e2e/app.spec.ts`.
 - Run automated API & E2E verification:

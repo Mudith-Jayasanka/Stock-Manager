@@ -33,6 +33,7 @@ async function restoreDb() {
       'products',
       'customers',
       'label_templates',
+      'material_purchases',
       'product_fragrances',
       'product_waxes',
       'orders',

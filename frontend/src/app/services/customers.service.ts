@@ -22,6 +22,10 @@ export class CustomersService {
     return this.http.get<Customer>(`${this.base}/${id}`);
   }
 
+  createCustomer(payload: Omit<Customer, 'id' | 'createdAt'>): Observable<Customer> {
+    return this.http.post<Customer>(this.base, payload);
+  }
+
   updateCustomer(id: string, payload: Omit<Customer, 'id' | 'createdAt'>): Observable<Customer> {
     return this.http.put<Customer>(`${this.base}/${id}`, payload);
   }

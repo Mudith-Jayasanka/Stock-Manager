@@ -27,6 +27,11 @@ When the user requests a new feature, enhancement, or bugfix:
      ```bash
      npm run db:restore:dev
      ```
+4. **Database Table Synchronization Requirement**:
+   - Whenever any new database table is created or modified in backend migrations/schema (`backend/src/db/setupDb.ts`), the table name MUST immediately be registered in both:
+     - `backend/src/db/snapshotDb.ts` (`tables` array)
+     - `backend/src/db/restoreDb.ts` (`tableOrder` array in topological foreign key dependency order)
+   - Never mark a database schema task complete without verifying that `npm run db:snapshot:dev` and `npm run db:restore:dev` include and restore the new table cleanly.
 
 ---
 

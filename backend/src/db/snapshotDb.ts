@@ -20,6 +20,7 @@ async function snapshotDb() {
       'fragrances',
       'wax_types',
       'products',
+      'material_purchases',
       'product_fragrances',
       'product_waxes',
       'customers',
